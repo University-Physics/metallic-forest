@@ -9,7 +9,7 @@ void print(std::vector <int> &a);
 int main()
 {
   std::vector<int> a(12100,0);
-  a[60]=1;
+  a[6050]=1;
   const int m=sqrt(a.size());
   for(int particula=0;particula<10000;particula++)
     {
