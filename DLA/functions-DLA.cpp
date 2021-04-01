@@ -3,6 +3,8 @@
 #include<cmath>
 #include<algorithm>
 #include<random>
+#include<fstream>
+#include<string>
 std::vector<int> vecinos(int Na, std::vector <int> &a)
 {
   //Esta función da información acerca de los vecinos de la casilla Na
@@ -46,12 +48,14 @@ while(true)
 }
 
 
-void print(std::vector <int> &a)
+void print(std::vector <int> &a, std::string &b)
 {
+  std::ofstream fout(b);
   for(int i=0;i<110;i++)
     {
-      for(int ii=0;ii<110;ii++){std::cout<<i<<" "<<ii<<" "<<a[i*110+ii]<<" "<<std::endl;}
+      for(int ii=0;ii<110;ii++){fout<<i<<" "<<ii<<" "<<a[i*110+ii]<<" "<<std::endl;}
       //Esta función imprime la ubicación de la casilla [i][ii] (i es la fila, ii la columna) y su valor (si esta ocupada es 1 y vacia 0) 
     }
+  fout.close();
 
 }

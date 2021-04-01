@@ -7,7 +7,7 @@ main-DLA.x:$(OBJ)
 	g++ $^ -o $@
 
 data.txt:main-DLA.x 
-	./$< > $@
+	./$<
 DLA.png:grafica.py data.txt
 	python3 $<
 .PHONY:clean
