@@ -1,6 +1,6 @@
 all:DLA.png
 %.x:%.cpp
-	g++ $< -o $@
+	g++ -std=c++11 $< -o $@
 data.txt:DLA.x
 	./$< > $@
 DLA.png:grafica.py data.txt
