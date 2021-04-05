@@ -2,3 +2,5 @@
 *.out
 *.x
 *.png
+*.o
+*.txt
