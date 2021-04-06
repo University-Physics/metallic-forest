@@ -11,7 +11,7 @@
 
 int main()
 {
-  std::vector<int> a(12100,0);
+  std::vector<int> a(1210000,0);
   a[6105]=1;
   const int m=sqrt(a.size());
   /*for(int particula=0;particula<10000;particula++)
@@ -23,14 +23,14 @@ int main()
   std::string b="data.txt";
   print(a,b);
   */
-  a.assign(12100,0);
+  a.assign(1210000,0);
   for(int i=0;i<110;i++) //En esta parte del código se inicializa, la frontera del electrodo
     {
-      a[109*110+i]=1;
+      a[1099*1100+i]=1;
     }
-  for(int particula=0;particula<172500;particula++)
+  for(int particula=0;particula<17250000;particula++)
     {
-      int Na=(rand() %110); //Las partículas se inicializan al lado izquierdo deel arreglo
+      int Na=(rand() %1100); //Las partículas se inicializan al lado izquierdo deel arreglo
       recorrido(Na,a);
     }
   std::string b="data.txt";
