@@ -8,12 +8,11 @@
 #include<algorithm>
 #include <cstdlib>
 #include "functions-DLA.h"
-
+#include "constantes.h"
 int main()
 {
-  std::vector<int> a(1210000,0);
-  a[6105]=1;
-  const int m=sqrt(a.size());
+  std::vector<int> a(largo*ancho,0);
+  a[largo*ancho/2]=1;
   /*for(int particula=0;particula<10000;particula++)
     {
       int Na=rand() %12100;
@@ -23,15 +22,15 @@ int main()
   std::string b="data.txt";
   print(a,b);
   */
-  a.assign(1210000,0);
-  for(int i=0;i<110;i++) //En esta parte del código se inicializa, la frontera del electrodo
+  a.assign(largo*ancho,0);
+  for(int i=0;i<largo;i++) //En esta parte del código se inicializa, la frontera del electrodo
     {
-      a[1099*1100+i]=1;
+      a[(ancho-1)*largo+i]=1;
     }
-  for(int particula=0;particula<17250000;particula++)
+  for(int particula=0;particula<numberparticles;particula++)
     {
-      int Na=(rand() %1100); //Las partículas se inicializan al lado izquierdo deel arreglo
-      recorrido(Na,a);
+      int y=(rand() %m); //Las partículas se inicializan al lado izquierdo deel arreglo.
+      recorrido(y,a);
     }
   std::string b="data.txt";
   print(a,b);

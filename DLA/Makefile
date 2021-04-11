@@ -1,6 +1,6 @@
 all:DLA.png
 OBJ= functions-DLA.o main-DLA.o
-%.o:%.cpp
+%.o:%.cpp constantes.h
 	g++ -c $< -n
 
 main-DLA.x:$(OBJ)	
