@@ -4,7 +4,7 @@ OBJ= functions-DLA.o main-DLA.o
 	g++ -c $< -n
 
 main-DLA.x:$(OBJ)	
-	g++ $^ -o $@
+	g++ $^ -g -o $@
 
 data.txt:main-DLA.x 
 	./$<

@@ -29,7 +29,8 @@ int main()
     }
   for(int particula=0;particula<numberparticles;particula++)
     {
-      int y=(rand() %m); //Las partículas se inicializan al lado izquierdo deel arreglo.
+      
+      int y=(rand() %(largo*ancho)); //Las partículas se inicializan al lado izquierdo deel arreglo.
       recorrido(y,a);
     }
   std::string b="data.txt";
