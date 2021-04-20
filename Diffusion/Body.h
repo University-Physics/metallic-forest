@@ -54,7 +54,7 @@ public:
     inline double getK() { return 0.5 * m * norm2(v); };
 
     // print gnuplot animation
-    inline void print() { std::cout << "," << r.x() << "+0.2*cos(t)," << r.z() << "+0.2*sin(t)"; };
+    inline void print() { std::cout << "," << r.x() << "+0.2*cos(t)," << r.y() << "+0.2*sin(t)"; };
 
     //-- Friends --
 
@@ -106,7 +106,6 @@ Vector3D rMin(Body b1, Body b2)
     double x, y, z;
     x = dr.x() - Lx * std::round(dr.x() / Lx);
     y = dr.y() - Ly * std::round(dr.y() / Ly);
-    z = dr.z() - Lz * std::round(dr.z() / Lz);
     Vector3D rmin(x, y, z);
     return rmin;
 }
