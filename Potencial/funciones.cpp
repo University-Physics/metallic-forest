@@ -1,5 +1,5 @@
 #ifndef Vector3D
-#include "Body.h" 
+#include "encabezado.h" 
 #endif
 
  void initial_conditions(data_t & data, int nx, int ny)

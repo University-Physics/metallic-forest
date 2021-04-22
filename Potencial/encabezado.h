@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "constantes.h"
+#include "Body.h"
 class potencial {
 public:
   double value;
