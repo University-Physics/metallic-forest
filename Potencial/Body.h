@@ -117,3 +117,4 @@ Vector3D rMin(Body b1, Body b2)
     Vector3D rmin(x, y, z);
     return rmin;
 }
+#include "encabezado.h"

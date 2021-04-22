@@ -1,5 +1,5 @@
 all:anim.gif
-OBJ= funciones.o main.o
+OBJ= main.o
 %.o:%.cpp constantes.h
 	g++ -c $< -n
 

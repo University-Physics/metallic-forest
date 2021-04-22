@@ -1,6 +1,4 @@
-#include"constantes.h"
-#include"encabezado.h"
-
+#include"funciones.cpp"
 int main(int argc, char **argv)
 {
     // declare data structures

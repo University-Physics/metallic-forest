@@ -1,7 +1,8 @@
-#include"constantes.h"
-#include"encabezado.h"
+#ifndef Vector3D
+#include "Body.h" 
+#endif
 
-void initial_conditions(data_t & data, int nx, int ny)
+ void initial_conditions(data_t & data, int nx, int ny)
 {
     for(int ix = 0; ix < nx; ++ix) {
         for(int iy = 0; iy < ny; ++iy) {
@@ -10,7 +11,7 @@ void initial_conditions(data_t & data, int nx, int ny)
     }
 }
 
-void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int Nmax)
+ void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int Nmax)
 {
     int ix, iy;
     Vector3D aux, aux1;
@@ -53,7 +54,7 @@ void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int 
     //}
 }
 
-void evolve(data_t & data, int nx, int ny, int nsteps, data_q & Q)
+ void evolve(data_t & data, int nx, int ny, int nsteps, data_q & Q)
 {
     start_gnuplot();
     for(int istep = 0; istep < nsteps; ++istep) {
@@ -63,7 +64,7 @@ void evolve(data_t & data, int nx, int ny, int nsteps, data_q & Q)
     }
 }
 
-void relaxation_step(data_t & data, int nx, int ny, data_q & Q)
+ void relaxation_step(data_t & data, int nx, int ny, data_q & Q)
 {
     // recorrer toda la matriz y aplicar el algoritmo,
     // teniendo cuidado con no modificar las condiciones de
