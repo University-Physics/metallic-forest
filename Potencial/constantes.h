@@ -6,3 +6,4 @@ const double YMAX = 1.2;
 const int NX = (XMAX-XMIN)/DELTA;
 const int NY = (YMAX-YMIN)/DELTA;
 const int NSTEPS = 100;
+const int Nmax = 100;

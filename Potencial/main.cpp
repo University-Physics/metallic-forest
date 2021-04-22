@@ -1,35 +1,40 @@
-
 #include"constantes.h"
 #include"encabezado.h"
+
 int main(int argc, char **argv)
 {
     // declare data structures
+    double x, y, z, vx, vy, vz, q0, m0=1;
     data_t potential(NX*NY);
-    data_p N(1000);
-    for (int i=0; i<N.size();i++)
+    Body N[Nmax];
+    for (int i=0; i<Nmax;i++)
       {
-	if(i<N.size()/2)
+	if(i<Nmax/2)
 	  {
-	N[i].x=0.7;
-	N[i].y=0.7;
-	N[i].q=1;
-	N[i].Vx=0;
-	N[i].Vy=0;
+          x=0.7;
+          y=0.7;
+          z=0;
+          q0=1;
+          vx=0;
+          vy=0;
+          vz= 0;
+          N[i].init(x, y, z, vx, vy, vz, m0, q0);
 	  }
 	else
 	  {
-	N[i].x=0.5;
-	N[i].y=0.5;
-	N[i].q=-1;
-	N[i].Vx=0;
-	N[i].Vy=0;
+	x=0.5;
+	y=0.5;
+	q0=-1;
+	vx=0;
+	vy=0;
+    N[i].init(x, y, z, vx, vy, vz, m0, q0);
 	  }
       }
     data_q Q(NX*NY,{0});
     // set initial and boundary conditions
-    Get_Q(N,Q,NX,NY,1.2);
+    Get_Q(N,Q,NX,NY,1.2, Nmax);
     initial_conditions(potential, NX, NY);
-    boundary_conditions(potential,NX, NY, N ,1.2);
+    boundary_conditions(potential,NX, NY, N ,1.2, Nmax);
 
     // evolve and print
     

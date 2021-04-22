@@ -10,9 +10,11 @@ void initial_conditions(data_t & data, int nx, int ny)
     }
 }
 
-void boundary_conditions(data_t & data, int nx, int ny, data_p & N, double l)
+void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int Nmax)
 {
     int ix, iy;
+    Vector3D aux, aux1;
+    double qaux;
     // first row
     ix = 0;
     for(int iy = 0; iy < ny; ++iy) {
@@ -33,12 +35,15 @@ void boundary_conditions(data_t & data, int nx, int ny, data_p & N, double l)
     for(int ix = 1; ix < nx; ++ix) {
         data[ix*ny + iy].value = 0.0;
     }
-    for(int ii=0;ii<N.size();ii++)
+    for(int ii=0;ii<Nmax;ii++)
     {
-      if(N[ii].Vx==0 && N[ii].Vy==0 && N[ii].q<0)
+        aux=N[ii].getR();
+        aux1=N[ii].getV();
+        qaux=N[ii].getQ();
+      if(aux1[0]==0 && aux1[1]==0 && qaux<0)
 	{
-      data[int(nx*N[ii].x/l)*ny+int(ny*N[ii].y/l)].value=100;
-      data[int(nx*N[ii].x/l)*ny+int(ny*N[ii].y/l)].ocupation=true;
+      data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=100;
+      data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;
 	}
 	}
     //new
@@ -111,10 +116,14 @@ void print_gnuplot(const data_t & data, int nx, int ny)
     std::cout << "e\n";
 }
 
-void Get_Q(data_p & N, data_q & Q, int nx, int ny, double l)
+void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax)
 {
-  for(int ii=0;ii<N.size();ii++)
-    {
-      Q[int(nx*N[ii].x/l)*ny+int(ny*N[ii].y/l)]+=N[ii].q;
+    Vector3D aux;
+    double qaux;
+  for(int ii=0;ii<Nmax;ii++)
+  {
+      aux=N[ii].getR();
+      qaux=N[ii].getQ();
+      Q[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)]+=qaux;
     }
 }
