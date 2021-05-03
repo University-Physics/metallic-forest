@@ -8,7 +8,7 @@ main.x:$(OBJ)
 	g++ $^ -g -o $@
 
 anim.gif: main.x
-	./main.x|gnuplot
+	./main.x
 .PHONY:clean
 clean:
 	rm -f *.x *.o 

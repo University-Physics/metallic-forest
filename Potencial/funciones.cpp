@@ -56,11 +56,11 @@
 
  void evolve(data_t & data, int nx, int ny, int nsteps, data_q & Q)
 {
-    start_gnuplot();
+  //start_gnuplot();
     for(int istep = 0; istep < nsteps; ++istep) {
       relaxation_step(data, nx, ny,Q);
         //print_screen(data, nx, ny);
-        print_gnuplot(data, nx, ny);
+        //print_gnuplot(data, nx, ny);
     }
 }
 
@@ -127,4 +127,54 @@ void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax)
       qaux=N[ii].getQ();
       Q[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)]+=qaux;
     }
+}
+
+void Get_EF(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double Delta)
+{
+  Vector3D aux, aux1, Faux;
+  double qaux;
+  int auxx, auxy;
+  for(int ii=0;ii<Nmax;ii++)
+    {
+      aux=N[ii].getR();
+      aux1=N[ii].getV();
+      qaux=N[ii].getQ();
+      N[ii].resetForce();
+      if(aux1[0]!=0 && aux1[1]!=0 && qaux<0)
+	{
+	  auxx=int(nx*aux[0]/l);
+	  auxy=int(ny*aux[1]/l);
+	  Faux[0]=(data[auxx*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/Delta;
+	  Faux[1]=(data[auxx*ny+auxy].value-data[auxx*ny+(auxy+1)].value)/Delta;
+	  N[ii].addForce(Faux);
+	}
+    }
+
+  return;
+}
+
+void Update_boundary(Body * N, int nx, int ny, double l, int Nmax, data_t & data)
+{
+  Vector3D aux, aux1, Vaux;
+  double qaux;
+  int auxx, auxy;
+  for(int ii=0;ii<Nmax;ii++)
+    {
+      aux=N[ii].getR();
+      aux1=N[ii].getV();
+      qaux=N[ii].getQ();
+      auxx=int(nx*aux[0]/l);
+      auxy=int(ny*aux[1]/l);
+      if( qaux<0)
+	{
+	  if(data[(auxx+1)*ny+auxy].ocupation == true ||data[(auxx-1)*ny+auxy].ocupation == true || data[auxx*ny+(auxy+1)].ocupation == true ||  data[auxx*ny+(auxy-11)].ocupation == true)
+	    {
+	      Vaux[0]=0;
+	      Vaux[1]=0;
+	      N[ii].setV(Vaux);
+	    }
+	}
+    }
+
+  return;
 }

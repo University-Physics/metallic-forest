@@ -18,3 +18,5 @@ void print_screen(const data_t & data, int nx, int ny);
 void start_gnuplot(void);
 void print_gnuplot(const data_t & data, int nx, int ny);
 void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax);
+void Get_EF(Body * N, int nx, int ny, double l, int Nmax, data_t & data);
+void Update_boundary(Body * N, int nx, int ny, double l, int Nmax, data_t & data);
