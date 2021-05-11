@@ -20,28 +20,32 @@
     ix = 0;
     for(int iy = 0; iy < ny; ++iy) {
         data[ix*ny + iy].value = 100.0;
+	data[ix*ny + iy].ocupation = true;
     }
     // last row
     ix = nx-1;
     for(int iy = 0; iy < ny; ++iy) {
         data[ix*ny + iy].value = 0.0;
+	data[ix*ny + iy].ocupation = true;
     }
     // first row
     iy = 0;
     for(int ix = 1; ix < nx; ++ix) {
         data[ix*ny + iy].value = 0.0;
+	data[ix*ny + iy].ocupation = true;
     }
     // last row
     iy = ny-1;
     for(int ix = 1; ix < nx; ++ix) {
         data[ix*ny + iy].value = 0.0;
+	data[ix*ny + iy].ocupation = true;
     }
     for(int ii=0;ii<Nmax;ii++)
     {
         aux=N[ii].getR();
         aux1=N[ii].getV();
         qaux=N[ii].getQ();
-      if(aux1[0]==0 && aux1[1]==0 && qaux<0)
+      if(aux1[0]==0 && aux1[1]==0 && qaux>0)
 	{
       data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=100;
       data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;
@@ -129,7 +133,7 @@ void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax)
     }
 }
 
-void Get_EF(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double Delta)
+void Get_EF(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double Delta, double gamma)
 {
   Vector3D aux, aux1, Faux;
   double qaux;
@@ -140,14 +144,17 @@ void Get_EF(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double 
       aux1=N[ii].getV();
       qaux=N[ii].getQ();
       N[ii].resetForce();
-      if(aux1[0]!=0 && aux1[1]!=0 && qaux<0)
+      if(aux1[0]==0 && aux1[1]==0 && qaux>0)
 	{
+	  
+	}
+      else{
 	  auxx=int(nx*aux[0]/l);
 	  auxy=int(ny*aux[1]/l);
-	  Faux[0]=(data[auxx*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/Delta;
-	  Faux[1]=(data[auxx*ny+auxy].value-data[auxx*ny+(auxy+1)].value)/Delta;
+	  Faux[0]=(data[auxx*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/Delta-gamma*aux1[0];
+	  Faux[1]=(data[auxx*ny+auxy].value-data[auxx*ny+(auxy+1)].value)/Delta-gamma*aux1[1];
 	  N[ii].addForce(Faux);
-	}
+      }
     }
 
   return;
@@ -165,7 +172,7 @@ void Update_boundary(Body * N, int nx, int ny, double l, int Nmax, data_t & data
       qaux=N[ii].getQ();
       auxx=int(nx*aux[0]/l);
       auxy=int(ny*aux[1]/l);
-      if( qaux<0)
+      if( qaux>0)
 	{
 	  if(data[(auxx+1)*ny+auxy].ocupation == true ||data[(auxx-1)*ny+auxy].ocupation == true || data[auxx*ny+(auxy+1)].ocupation == true ||  data[auxx*ny+(auxy-11)].ocupation == true)
 	    {
@@ -177,4 +184,76 @@ void Update_boundary(Body * N, int nx, int ny, double l, int Nmax, data_t & data
     }
 
   return;
+}
+
+void update_and_check_pos(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double mu, double sigma, double dt)
+{
+  Vector3D Rold, Rnew, Vold, Vnew, Dr, move;
+  double qaux, move_x, move_y;
+  int auxx, auxy;
+  std::vector<int> cond (4,0);
+  CRandom rand(42);
+  for(int ii=0;ii<Nmax;ii++)
+    {
+      Rold=N[ii].getR();
+      Vold=N[ii].getV();
+      qaux=N[ii].getQ();
+      Get_EF(N, nx, ny, l, Nmax, data, DELTA, 0.1);
+      N[ii].moveV(dt, 1);
+      N[ii].moveR(dt, 1);
+      move_x = rand.gauss(mu, sigma);
+      move_y = rand.gauss(mu, sigma);
+      move.load(move_x, move_y, 0);
+      N[ii].setR(N[ii].getR() + move);
+      Rnew=N[ii].getR();
+      Vnew=N[ii].getV();
+      if(Rnew[0]>=l) cond[0]=1;
+      else if(Rnew[1]>=l) cond[1]=1;
+      else if(Rnew[0]<=0) cond[2]=1;
+      else if(Rnew[1]<=0) cond[3]=1;
+      int b =std::accumulate(cond.begin(), cond.end(), 0);
+      if(b>0)
+	{
+	  if(b>1){
+	    N[ii].setV(-1*Vnew);
+	    N[ii].setR(Rold);
+	  }
+	  else{
+	    for(int jj=0; jj<4; jj++)
+	      {
+		if(cond[jj]==1 && jj%2!=0)
+		  {
+		    Vnew[0]=-1*Vnew[0];
+		    N[ii].setV(Vnew);
+		    N[ii].setR(Rold);
+		  }
+		else
+		  {
+		    Vnew[1]=-1*Vnew[1];
+		    N[ii].setV(Vnew);
+		    N[ii].setR(Rold);
+		  }
+	      }
+	  }
+	}
+      if (qaux>0 && cond[2]==1)
+	{
+	  double daux=0.01;
+	  Dr=Rnew-Rold;
+	  for (int kk=0; kk<100; kk++)
+	    {
+	      auxx=int(nx*(Rold[0]+kk*daux*Dr[0])/l);
+	      auxy=int(ny*(Rold[1]+kk*daux*Dr[0])/l);
+	      if(auxx <=nx && auxy <= ny && data[(auxx)*ny+auxy].ocupation == true)
+	      {
+		Rold[0]=Rold[0]+(kk-1)*daux*Dr[0];
+		Rold[1]=Rold[1]+(kk-1)*daux*Dr[0];
+		Vold[0]=0;
+		Vold[1]=1;
+                N[ii].setR(Rold);
+		N[ii].setV(Vold);
+	      }
+	    }
+	}
+    }
 }

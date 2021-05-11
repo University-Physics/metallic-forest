@@ -8,7 +8,7 @@ main.x:$(OBJ)
 	g++ $^ -g -o $@
 
 anim.gif: main.x
-	./main.x
+	./main.x > data.txt
 .PHONY:clean
 clean:
 	rm -f *.x *.o 
