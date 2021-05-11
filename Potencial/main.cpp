@@ -55,7 +55,7 @@ int main(int argc, char **argv)
         }
       */
 	// set initial and boundary conditions
-	Get_Q(Molecule,Q,NX,NY,80, Nmax);
+	Get_Q(Molecule,Q,NX,NY,Lx, Nmax);
 	initial_conditions(potential, NX, NY);
 	boundary_conditions(potential,NX, NY, Molecule ,Lx, Nmax);
 

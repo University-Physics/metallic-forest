@@ -249,6 +249,7 @@ void update_and_check_pos(Body * N, int nx, int ny, double l, int Nmax, data_t &
 		Vold[1]=0;
                 N[ii].setR(Rold);
 		N[ii].setV(Vold);
+		data[(auxx)*ny+auxy].ocupation == true;
 	      }
 	    }
 	}
