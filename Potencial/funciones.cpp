@@ -148,8 +148,8 @@ void Get_EF(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double 
       else{
 	  auxx=int(nx*aux[0]/l);
 	  auxy=int(ny*aux[1]/l);
-	  Faux[0]=(data[auxx*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/Delta-gamma*aux1[0];
-	  Faux[1]=(data[auxx*ny+auxy].value-data[auxx*ny+(auxy+1)].value)/Delta-gamma*aux1[1];
+	  Faux[0]=-(data[auxx*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/Delta-gamma*aux1[0];
+	  Faux[1]=-(data[auxx*ny+auxy].value-data[auxx*ny+(auxy+1)].value)/Delta-gamma*aux1[1];
 	  N[ii].addForce(Faux);
       }
     }
@@ -171,11 +171,12 @@ void Update_boundary(Body * N, int nx, int ny, double l, int Nmax, data_t & data
       auxy=int(ny*aux[1]/l);
       if( qaux>0)
 	{
-	  if(data[(auxx+1)*ny+auxy].ocupation == true ||data[(auxx-1)*ny+auxy].ocupation == true || data[auxx*ny+(auxy+1)].ocupation == true ||  data[auxx*ny+(auxy-11)].ocupation == true)
+	  if(data[(auxx+1)*ny+auxy].ocupation == true ||data[(auxx-1)*ny+auxy].ocupation == true || data[auxx*ny+(auxy+1)].ocupation == true ||  data[auxx*ny+(auxy-1)].ocupation == true)
 	    {
 	      Vaux[0]=0;
 	      Vaux[1]=0;
 	      N[ii].setV(Vaux);
+	      data[(auxx)*ny+auxy].ocupation = true;
 	    }
 	}
     }
@@ -196,61 +197,67 @@ void update_and_check_pos(Body * N, int nx, int ny, double l, int Nmax, data_t &
       Vold=N[ii].getV();
       qaux=N[ii].getQ();
       Get_EF(N, nx, ny, l, Nmax, data, DELTA, 0.1);
-      N[ii].moveV(dt, 1);
-      N[ii].moveR(dt, 1);
-      move_x = rand.gauss(mu, sigma);
-      move_y = rand.gauss(mu, sigma);
-      move.load(move_x, move_y, 0);
-      N[ii].setR(N[ii].getR() + move);
-      Rnew=N[ii].getR();
-      Vnew=N[ii].getV();
-      if(Rnew[0]>=l) cond[0]=1;
-      else if(Rnew[1]>=l) cond[1]=1;
-      else if(Rnew[0]<=0) cond[2]=1;
-      else if(Rnew[1]<=0) cond[3]=1;
-      int b =std::accumulate(cond.begin(), cond.end(), 0);
-      if(b>0)
+      if(Vold[0]!=0 && Vold[1]!=0)
 	{
-	  if(b>1){
-	    N[ii].setV(-1*Vnew);
-	    N[ii].setR(Rold);
-	  }
-	  else{
-	    for(int jj=0; jj<4; jj++)
-	      {
-		if(cond[jj]==1 && jj%2!=0)
-		  {
-		    Vnew[0]=-1*Vnew[0];
-		    N[ii].setV(Vnew);
-		    N[ii].setR(Rold);
-		  }
-		else
-		  {
-		    Vnew[1]=-1*Vnew[1];
-		    N[ii].setV(Vnew);
-		    N[ii].setR(Rold);
-		  }
-	      }
-	  }
-	}
-      if (qaux>0 && cond[2]==1)
-	{
-	  double daux=0.01;
-	  Dr=Rnew-Rold;
-	  for (int kk=0; kk<100; kk++)
+	  N[ii].moveV(dt, 1);
+	  N[ii].moveR(dt, 1);
+	  move_x = rand.gauss(mu, sigma);
+	  move_y = rand.gauss(mu, sigma);
+	  move.load(move_x, move_y, 0);
+	  N[ii].setR(N[ii].getR() + move);
+	  Rnew=N[ii].getR();
+	  Vnew=N[ii].getV();
+	  if(Rnew[0]>=l) cond[0]=1;
+	  else if(Rnew[1]>=l) cond[1]=1;
+	  else if(Rnew[0]<=0) cond[2]=1;
+	  else if(Rnew[1]<=0) cond[3]=1;
+	  int b =std::accumulate(cond.begin(), cond.end(), 0);
+	  if(b>0)
 	    {
-	      auxx=int(nx*(Rold[0]+kk*daux*Dr[0])/l);
-	      auxy=int(ny*(Rold[1]+kk*daux*Dr[0])/l);
-	      if(auxx <=nx && auxy <= ny && data[(auxx)*ny+auxy].ocupation == true)
-	      {
-		Rold[0]=Rold[0]+(kk-1)*daux*Dr[0];
-		Rold[1]=Rold[1]+(kk-1)*daux*Dr[0];
-		Vold[0]=0;
-		Vold[1]=0;
-                N[ii].setR(Rold);
-		N[ii].setV(Vold);
-		data[(auxx)*ny+auxy].ocupation == true;
+	      if(b>1){
+		N[ii].setV(-1*Vnew);
+		N[ii].setR(Rold);
 	      }
+	      else{
+		for(int jj=0; jj<4; jj++)
+		  {
+		    if(cond[jj]==1 && jj%2!=0)
+		      {
+			Vnew[0]=-1*Vnew[0];
+			N[ii].setV(Vnew);
+			N[ii].setR(Rold);
+		      }
+		    else
+		      {
+			Vnew[1]=-1*Vnew[1];
+			N[ii].setV(Vnew);
+			N[ii].setR(Rold);
+		      }
+		  }
+	      }
+	    }
+	  if (qaux>0 && cond[2]==1)
+	    {
+	      double daux=0.01;
+	      Dr=Rnew-Rold;
+	      for (int kk=0; kk<100; kk++)
+		{
+		  auxx=int(nx*(Rold[0]+kk*daux*Dr[0])/l);
+		  auxy=int(ny*(Rold[1]+kk*daux*Dr[0])/l);
+		  if(auxx <=nx && auxy <= ny && data[(auxx)*ny+auxy].ocupation == true)
+		    {
+		      Rold[0]=Rold[0]+(kk-1)*daux*Dr[0];
+		      Rold[1]=Rold[1]+(kk-1)*daux*Dr[1];
+		      Vold[0]=0;
+		      Vold[1]=0;
+		      auxx=int(nx*(Rold[0])/l);
+		      auxy=int(ny*(Rold[1])/l);
+		      N[ii].setR(Rold);
+		      N[ii].setV(Vold);
+		      data[(auxx)*ny+auxy].ocupation == true;
+		      break;
+		    }
+		}
 	    }
 	}
     }
@@ -260,7 +267,7 @@ void print_fractal (int nx, int ny, data_t & data)
 {
   for(int ix = 0; ix < nx; ++ix) {
         for(int iy = 0; iy < ny; ++iy) {
-            std::cout << data[ix*ny + iy].ocupation << " \t ";
+	  std::cout << ix << "  "<<iy<<"   "<< data[ix*ny + iy].ocupation << "\n";
         }
         std::cout << "\n";
     }
