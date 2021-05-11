@@ -22,3 +22,4 @@ void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax);
 void Get_EF(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double gamma);
 void Update_boundary(Body * N, int nx, int ny, double l, int Nmax, data_t & data);
 void update_and_check_pos(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double mu, double sigma, double dt);
+void print_fractal (int nx, int ny, data_t & data);

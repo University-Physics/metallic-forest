@@ -42,18 +42,18 @@ int main(int argc, char **argv)
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0);
 	Molecule[i].print();
       }
-    start_animation(argc);
+    //start_animation(argc);
     
-    for (int t = 0; t < 100; t++)
+    for (int t = 0; t < 1000; t++)
     {
-        if (t % 2 == 0)
+      /*if (t % 2 == 0)
         {
 	     begin_frame(argc);
              for (int k = 0; k < N; k++)
                 Molecule[k].print();
 	     end_frame(argc);
         }
-
+      */
 	// set initial and boundary conditions
 	Get_Q(Molecule,Q,NX,NY,80, Nmax);
 	initial_conditions(potential, NX, NY);
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
         update_and_check_pos(Molecule, Nx, Ny, Lx, Nmax, potential, mu, sigma, dt);
 	Update_boundary(Molecule, NX, NY, 80, Nmax, potential);
     }
-    
+    print_fractal(NX,NY, potential);
     return 0;
 }
 

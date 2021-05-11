@@ -257,3 +257,14 @@ void update_and_check_pos(Body * N, int nx, int ny, double l, int Nmax, data_t &
 	}
     }
 }
+
+void print_fractal (int nx, int ny, data_t & data)
+{
+  for(int ix = 0; ix < nx; ++ix) {
+        for(int iy = 0; iy < ny; ++iy) {
+            std::cout << data[ix*ny + iy].ocupation << "  ";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "\n";
+}
