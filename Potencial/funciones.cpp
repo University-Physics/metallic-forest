@@ -25,20 +25,17 @@
     // last row
     ix = nx-1;
     for(int iy = 0; iy < ny; ++iy) {
-        data[ix*ny + iy].value = 0.0;
-	data[ix*ny + iy].ocupation = true;
+      data[ix*ny + iy].value = 0.0;
     }
     // first row
     iy = 0;
     for(int ix = 1; ix < nx; ++ix) {
         data[ix*ny + iy].value = 0.0;
-	data[ix*ny + iy].ocupation = true;
     }
     // last row
     iy = ny-1;
     for(int ix = 1; ix < nx; ++ix) {
         data[ix*ny + iy].value = 0.0;
-	data[ix*ny + iy].ocupation = true;
     }
     for(int ii=0;ii<Nmax;ii++)
     {
@@ -249,7 +246,7 @@ void update_and_check_pos(Body * N, int nx, int ny, double l, int Nmax, data_t &
 		Rold[0]=Rold[0]+(kk-1)*daux*Dr[0];
 		Rold[1]=Rold[1]+(kk-1)*daux*Dr[0];
 		Vold[0]=0;
-		Vold[1]=1;
+		Vold[1]=0;
                 N[ii].setR(Rold);
 		N[ii].setV(Vold);
 	      }
@@ -262,7 +259,7 @@ void print_fractal (int nx, int ny, data_t & data)
 {
   for(int ix = 0; ix < nx; ++ix) {
         for(int iy = 0; iy < ny; ++iy) {
-            std::cout << data[ix*ny + iy].ocupation << "  ";
+            std::cout << data[ix*ny + iy].ocupation << " \t ";
         }
         std::cout << "\n";
     }

@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     double tdibujo = 0;
     double dt=0.1;
 
-    double x, y, z, vx, vy, vz, q0, x0 = 2 * Lx, y0 = 2 * Ly;
+    double x, y, z, vx, vy, vz, q0, x0 = 0, y0 = 0;
 
     double dx = Lx / (Nx + 1);
     double dy = Ly / (Ny + 1);
@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	if(i%2==0) q0=1;
 
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0);
-	Molecule[i].print();
+	//Molecule[i].print();
       }
     //start_animation(argc);
     
@@ -57,12 +57,12 @@ int main(int argc, char **argv)
 	// set initial and boundary conditions
 	Get_Q(Molecule,Q,NX,NY,80, Nmax);
 	initial_conditions(potential, NX, NY);
-	boundary_conditions(potential,NX, NY, Molecule ,80, Nmax);
+	boundary_conditions(potential,NX, NY, Molecule ,Lx, Nmax);
 
 	// evolve
 	evolve(potential, NX, NY, NSTEPS,Q);
         update_and_check_pos(Molecule, Nx, Ny, Lx, Nmax, potential, mu, sigma, dt);
-	Update_boundary(Molecule, NX, NY, 80, Nmax, potential);
+	Update_boundary(Molecule, NX, NY, Lx, Nmax, potential);
     }
     print_fractal(NX,NY, potential);
     return 0;
