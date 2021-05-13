@@ -1,14 +1,14 @@
 all:anim.gif
 OBJ= main.o
 %.o:%.cpp constantes.h
-	g++ -c $< -n
+	g++ -c -O2 $< -n
 
 main.x:$(OBJ)
 
-	g++ $^ -g -o $@
+	g++ -O2 $^ -g -o $@
 
 anim.gif: main.x
-	./main.x > data.txt
+	time ./main.x save movie | gnuplot
 .PHONY:clean
 clean:
 	rm -f *.x *.o 

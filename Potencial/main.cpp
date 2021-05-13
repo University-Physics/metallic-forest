@@ -15,16 +15,16 @@ int main(int argc, char **argv)
     double move_x, move_y;
     Vector3D move;
     double tdibujo = 0;
-    double dt=0.1;
+    double dt=0.01;
 
-    double x, y, z, vx, vy, vz, q0, x0 = 0, y0 = 0;
+    double x, y, z, vx, vy, vz, q0, x0 = 5, y0 = 5;
 
-    double dx = Lx / (Nx + 1);
-    double dy = Ly / (Ny + 1);
+    double dx = Lx /(10* (Nx + 1));
+    double dy = Ly /(10*(Ny + 1));
     //Declare potential and density array
     data_t potential(NX*NY);
     data_q Q(NX*NY,{0});
-    for (int i=0; i<Nmax;i++)
+    for (int i=0; i<N;i++)
       {
         // Initial positions in cubic lattice
         x = dx + (i % Nx) * dx + x0;
@@ -36,35 +36,41 @@ int main(int argc, char **argv)
         vy = 0;
         vz = 0;
 
-	q0=-1;
-	if(i%2==0) q0=1;
+	q0=-0.01;
+	if(i%2==0) q0=0.01;
 
-        Molecule[i].init(x, y, z, vx, vy, vz, m0, q0);
+        Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false);
 	//Molecule[i].print();
       }
-    //start_animation(argc);
+    start_animation(argc);
     
-    for (int t = 0; t < 1000; t++)
+    for (int t = 0; t < 2000; t++)
     {
-      /*if (t % 2 == 0)
+      if (t % 5 == 0)
         {
 	     begin_frame(argc);
              for (int k = 0; k < N; k++)
                 Molecule[k].print();
 	     end_frame(argc);
         }
-      */
+      
 	// set initial and boundary conditions
-	Get_Q(Molecule,Q,NX,NY,Lx, Nmax);
+	Get_Q(Molecule,Q,NX,NY,Lx, N);
 	initial_conditions(potential, NX, NY);
-	boundary_conditions(potential,NX, NY, Molecule ,Lx, Nmax);
-
+	boundary_conditions(potential,NX, NY, Molecule ,Lx, N);
 	// evolve
 	evolve(potential, NX, NY, NSTEPS,Q);
-        update_and_check_pos(Molecule, Nx, Ny, Lx, Nmax, potential, mu, sigma, dt);
-	Update_boundary(Molecule, NX, NY, Lx, Nmax, potential);
+        update_and_check_pos(Molecule, Nx, Ny, Lx, N, potential, mu, sigma, dt);
+	Update_boundary(Molecule, NX, NY, Lx, N, potential);
     }
-    print_fractal(NX,NY, potential);
+    //print_fractal(NX,NY, potential);
+    std::ofstream myfile;
+    myfile.open ("example.txt");
+    for (int i=0; i<N;i++)
+      {
+	myfile<<i<<"\t"<<Molecule[i].getoc()<<"\t"<<Molecule[i].getR()[0]<<"\t" << Molecule[i].getR()[1]<<"\n";
+      }
+    myfile.close();
     return 0;
 }
 

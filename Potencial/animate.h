@@ -13,8 +13,8 @@ void start_animation(int animation)
             std::cout << "set output 'movie01.gif'\n";
         }
         std::cout << "unset key\n";
-        std::cout << "set xrange[0:" << 5*Lx << "]\n";
-        std::cout << "set yrange[0:" << 5 * Ly << "]\n";
+        std::cout << "set xrange[0:" << Lx << "]\n";
+        std::cout << "set yrange[0:" << Ly << "]\n";
         std::cout << "set size ratio -1\n";
         std::cout << "set parametric\n";
         std::cout << "set trange [0:7]\n";
