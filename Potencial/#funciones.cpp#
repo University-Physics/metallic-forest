@@ -218,7 +218,7 @@ void update_and_check_pos(Body * N, int nx, int ny, double l, int Nmax, data_t &
 	{
 	  if(b>1){
 	    Dr=(-1)*Dr;
-	    N[ii].setV((-1)*Vnew);
+	    N[ii].setV(Vnew);
 	    N[ii].setR(Rold+Dr);
 	  }
 	  else if (qaux>0 && cond[2]==1)

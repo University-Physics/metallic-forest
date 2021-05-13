@@ -14,9 +14,11 @@ private:
     double m, U;
     // For this first implementation I'll ignore the geometry and assume it as a point mass.
     double q;
+
+    bool oc;
         
 public:
-        void init(double x, double y, double z, double vx, double vy, double vz, double mass = 1.0, double charge = 1.0);
+  void init(double x, double y, double z, double vx, double vy, double vz, double mass = 1.0, double charge = 1.0, bool ocup = false);
     void printState(double t, std::ofstream &File);
 
     // --Inline Functions --
@@ -47,15 +49,21 @@ public:
 
     // Get charge
     inline double getQ(void) { return q; };
+
+    // Get ocupation
+    inline bool getoc(void) { return oc; };
         
     // Set position
     inline void setR(Vector3D newR) { r = newR; };
 
     // Set velocity
-        inline void setV(Vector3D newV) { v = newV; };
+    inline void setV(Vector3D newV) { v = newV; };
 
     //set charge
-    inline void setV(double newq) { q = newq; };    
+    inline void setq(double newq) { q = newq; };
+
+    //set ocupation
+    inline void setoc(bool newoc) { oc = newoc; };    
         
     //Get kinetic energy
     inline double getK() { return 0.5 * m * norm2(v); };
@@ -78,12 +86,13 @@ public:
  * @param double vx, vy, vz: Initial velocity of the body.
  * @param double m: Mass of the body. Defaults to 1.
  */
-void Body::init(double x, double y, double z, double vx, double vy, double vz, double mass, double charge)
+void Body::init(double x, double y, double z, double vx, double vy, double vz, double mass, double charge, bool ocup)
 {
     r.load(x, y, z);
     v.load(vx, vy, vz);
     m = mass;
     q = charge;
+    oc = ocup;
     resetForce();
     resetU();
 }

@@ -3,7 +3,7 @@
 #include <fstream>
 
 // Geometry constants
-const double Lx = 8, Ly = Lx;
+const double Lx = 10, Ly = Lx;
 const double V = Lx * Ly ;
 
 // PEFRL
@@ -15,7 +15,7 @@ const double coef1 = (1 - 2 * Lambda) / 2;
 const double coef2 = (1 - 2 * (Xi + Zi));
 
 // Implementation
-const int Nx = 10, Ny = 10;
+const int Nx = 20, Ny = 20;
 const int N = Nx * Ny ;
 const double m0 = 1.0;
 
