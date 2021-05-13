@@ -20,7 +20,7 @@
     // first row
     ix = 0;
     for(int iy = 0; iy < ny; ++iy) {
-        data[ix*ny + iy].value = 100.0;
+        data[ix*ny + iy].value = 1.0;
 	data[ix*ny + iy].ocupation = true;
     }
     // last row
@@ -45,7 +45,7 @@
         qaux=N[ii].getQ();
       if(ocaux==true)
 	{
-      data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=100;
+      data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=1;
       data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;
 	}
 	}
@@ -217,9 +217,10 @@ void update_and_check_pos(Body * N, int nx, int ny, double l, int Nmax, data_t &
       if(b>0)
 	{
 	  if(b>1){
-	    Dr=(-1)*Dr;
-	    N[ii].setV((-1)*Vnew);
-	    N[ii].setR(Rold+Dr);
+	    Rnew[0]=-int(Rnew[0]/l)*l+Rnew[0];
+	    Rnew[1]=-int(Rnew[1]/l)*l+Rnew[1];
+	    N[ii].setV(Vnew);
+	    N[ii].setR(Rnew);
 	  }
 	  else if (qaux>0 && cond[2]==1)
 	    {
@@ -247,19 +248,15 @@ void update_and_check_pos(Body * N, int nx, int ny, double l, int Nmax, data_t &
 	    }
 	  else if(cond[1]==1  || cond[3]==1)
 	    {
-	      Dr[1]=(-1)*Dr[1];
-	      Dr[0]=(1)*Dr[0];
-	      Vnew[1]=(-1)*Vnew[1];
+	      Rnew[1]=-int(Rnew[1]/l)*l+Rnew[1];
 	      N[ii].setV(Vnew);
-	      N[ii].setR(Rold+Dr);
+	      N[ii].setR(Rnew);
 	    }
 	  else
 	    {
-	      Dr[0]=(-1)*Dr[0];
-	      Dr[1]=(1)*Dr[1];
-	      Vnew[0]=-1*Vnew[0];
+	      Rnew[0]=-int(Rnew[0]/l)*l+Rnew[0];
 	      N[ii].setV(Vnew);
-	      N[ii].setR(Rold+Dr);
+	      N[ii].setR(Rnew);
 	    }  
 	}
     }

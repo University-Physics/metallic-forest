@@ -5,7 +5,7 @@ OBJ= main.o
 
 main.x:$(OBJ)
 
-	g++ -O2 $^ -g -o $@
+	g++ -O2 -g -fsanitize=address -Wall -fsanitize=undefined $^ -g -o $@
 
 anim.gif: main.x
 	time ./main.x save movie | gnuplot
