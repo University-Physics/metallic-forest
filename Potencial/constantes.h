@@ -1,8 +1,8 @@
 const double DELTA = 0.05;
 const double XMIN = 0.0;
-const double XMAX = 8;
+const double XMAX = 10;
 const double YMIN = 0.0;
-const double YMAX = 8;
+const double YMAX = 10;
 const int NX = (XMAX-XMIN)/DELTA;
 const int NY = (YMAX-YMIN)/DELTA;
 const int NSTEPS = 100;

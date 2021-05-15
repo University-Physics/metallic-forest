@@ -7,6 +7,7 @@ class potencial {
 public:
   double value;
   bool ocupation;
+  bool electrode;
 };
 typedef std::vector<potencial> data_t;
 typedef std::vector<double> data_q;
