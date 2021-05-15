@@ -44,9 +44,9 @@ int main(int argc, char **argv)
       }
     start_animation(argc);
     
-    for (int t = 0; t < 2000; t++)
+    for (int t = 0; t < 20000; t++)
     {
-      if (t % 5 == 0)
+      if (t % 50 == 0)
         {
 	     begin_frame(argc);
              for (int k = 0; k < N; k++)
@@ -55,15 +55,16 @@ int main(int argc, char **argv)
         }
       
 	// set initial and boundary conditions
-	Get_Q(Molecule,Q,NX,NY,Lx, N);
+	Get_Q(Molecule,Q,NX,NY,Lx-2*DELTA, N);
 	initial_conditions(potential, NX, NY);
 	boundary_conditions(potential,NX, NY, Molecule ,Lx, N);
 	// evolve
 	evolve(potential, NX, NY, NSTEPS,Q);
-        update_and_check_pos(Molecule, Nx, Ny, Lx, N, potential, mu, sigma, dt);
-	Update_boundary(Molecule, NX, NY, Lx, N, potential);
+        update_and_check_pos(Molecule, NX, NY, Lx-2*DELTA, N, potential, mu, sigma, dt);
+	Update_boundary(Molecule, NX, NY, Lx-2*DELTA, N, potential);
     }
-    //print_fractal(NX,NY, potential);
+    print_fractal(NX,NY, potential);
+    /*
     std::ofstream myfile;
     myfile.open ("example.txt");
     for (int i=0; i<N;i++)
@@ -71,6 +72,7 @@ int main(int argc, char **argv)
 	myfile<<i<<"\t"<<Molecule[i].getoc()<<"\t"<<Molecule[i].getR()[0]<<"\t" << Molecule[i].getR()[1]<<"\n";
       }
     myfile.close();
+    */
     return 0;
 }
 
