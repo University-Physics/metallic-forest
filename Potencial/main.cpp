@@ -17,10 +17,10 @@ int main(int argc, char **argv)
     double tdibujo = 0;
     double dt=0.01;
 
-    double x, y, z, vx, vy, vz, q0, x0 = 5, y0 = 5;
+    double x, y, z, vx, vy, vz, q0, x0 = 1, y0 = 1;
 
-    double dx = Lx /(10* (Nx + 1));
-    double dy = Ly /(10*(Ny + 1));
+    double dx = Lx /(1.2*(Nx + 1));
+    double dy = Ly /(1.2*(Ny + 1));
     //Declare potential and density array
     data_t potential(NX*NY);
     data_q Q(NX*NY,{0});
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     
     for (int t = 0; t < 20000; t++)
     {
-      if (t % 50 == 0)
+      if (t % 1 == 0)
         {
 	     begin_frame(argc);
              for (int k = 0; k < N; k++)
@@ -54,14 +54,7 @@ int main(int argc, char **argv)
 	     end_frame(argc);
         }
       
-	// set initial and boundary conditions
-	Get_Q(Molecule,Q,NX,NY,Lx-2*DELTA, N);
-	initial_conditions(potential, NX, NY);
-	boundary_conditions(potential,NX, NY, Molecule ,Lx, N);
-	// evolve
-	evolve(potential, NX, NY, NSTEPS,Q);
-        update_and_check_pos(Molecule, NX, NY, Lx-2*DELTA, N, potential, mu, sigma, dt);
-	Update_boundary(Molecule, NX, NY, Lx-2*DELTA, N, potential);
+      PEFRL(Molecule, potential, Q, NX, NY, Lx, N, mu, sigma, dt, t);
     }
     print_fractal(NX,NY, potential);
     /*

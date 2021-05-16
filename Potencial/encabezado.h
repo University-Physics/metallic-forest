@@ -23,4 +23,7 @@ void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax);
 void Get_EF(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double gamma);
 void Update_boundary(Body * N, int nx, int ny, double l, int Nmax, data_t & data);
 void update_and_check_pos(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double mu, double sigma, double dt);
+void update_and_check_pos2(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double mu, double sigma, double dt, double coefx, double coefv, int seed);
 void print_fractal (int nx, int ny, data_t & data);
+void evolve_system(Body * N, data_t & data, data_q & Q, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, double coefx, double coefv, int seed);
+void PEFRL(Body * N, data_t & data, data_q & Q, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, int seed);

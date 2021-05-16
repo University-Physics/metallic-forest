@@ -18,8 +18,7 @@
     // first row
     ix = 0;
     for(int iy = 0; iy < ny; ++iy) {
-        data[ix*ny + iy].value = 1.0;
-	data[ix*ny + iy].ocupation = true;
+        data[ix*ny + iy].value = 0.0;
 	data[ix*ny + iy].electrode = true;
     }
     // last row
@@ -40,6 +39,11 @@
       data[ix*ny + iy].value = 0.0;
       data[ix*ny + iy].electrode = true;
     }
+    ix=nx/2;
+    iy=ny/2;
+    data[ix*ny + iy].value = 1.0;
+    data[ix*ny + iy].ocupation = true;
+    data[ix*ny + iy].electrode = true;
     for(int ii=0;ii<Nmax;ii++)
     {
       aux=N[ii].getR();
@@ -122,6 +126,8 @@ void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax)
   {
       aux=N[ii].getR();
       qaux=N[ii].getQ();
+      aux[0]-=DELTA;
+      aux[1]-=DELTA;
       Q[(int((nx-2)*aux[0]/l)+1)*ny+int((ny-2)*aux[1]/l)+1]+=qaux;
     }
 }
@@ -134,18 +140,17 @@ void Get_EF(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double 
   bool auxoc;
   for(int ii=0;ii<Nmax;ii++)
     {
-      if(auxoc==true)
+      if(N[ii].getoc()==true)
 	{
 	  N[ii].resetForce();
 	}
       else{
 	aux=N[ii].getR();
 	aux1=N[ii].getV();
-	auxoc=N[ii].getoc();
 	qaux=N[ii].getQ();
 	N[ii].resetForce();
-	auxx=int((nx-2)*aux[0]/l)+1;
-	auxy=int((ny-2)*aux[1]/l)+1;
+	auxx=int((nx-2)*(aux[0]-DELTA)/l)+1;
+	auxy=int((ny-2)*(aux[1]-DELTA)/l)+1;
 	if(1<=auxx<nx-1 && 1<=auxy<ny-1)
 	  {
 	    Faux[0]=qaux*(data[(auxx-1)*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/(2*Delta)-gamma*aux1[0];
@@ -166,6 +171,8 @@ void Update_boundary(Body * N, int nx, int ny, double l, int Nmax, data_t & data
   for(int ii=0;ii<Nmax;ii++)
     {
       aux=N[ii].getR();
+      aux[0]-=DELTA;
+      aux[1]-=DELTA;
       aux1=N[ii].getV();
       qaux=N[ii].getQ();
       auxx=int((nx-2)*aux[0]/l)+1;
@@ -210,8 +217,8 @@ void update_and_check_pos(Body * N, int nx, int ny, double l, int Nmax, data_t &
 	  Rnew=N[ii].getR();
 	  Vnew=N[ii].getV();
 	  Dr=Rnew-Rold;
-	  if(Rnew[0]>=ltot) cond[0]=1;
-	  else if(Rnew[1]>=ltot) cond[1]=1;
+	  if(Rnew[0]>=l) cond[0]=1;
+	  else if(Rnew[1]>=l) cond[1]=1;
 	  else if(Rnew[0]<=0) cond[2]=1;
 	  else if(Rnew[1]<=0) cond[3]=1;
 	  b =std::accumulate(cond.begin(), cond.end(), 0);
@@ -277,6 +284,60 @@ void update_and_check_pos(Body * N, int nx, int ny, double l, int Nmax, data_t &
 	    }
 	}
     }
+}
+
+void update_and_check_pos2(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double mu, double sigma, double dt, double coefx, double coefv, int seed)
+{
+  Vector3D Rold, Rnew, Vold, Vnew, move;
+  double move_x, move_y;
+  int auxx, auxy, auxx1, auxy1;
+  CRandom rand(seed);
+  for(int ii=0;ii<Nmax;ii++)
+    {
+      if(N[ii].getoc()==false)
+	{
+	  Get_EF(N, nx, ny, l, Nmax, data, DELTA, 100);
+	  N[ii].moveV(dt, coefx);
+	  N[ii].moveR(dt, coefv);
+	  move_x = rand.gauss(mu, sigma);
+	  move_y = rand.gauss(mu, sigma);
+	  move.load(move_x, move_y, 0);
+	  N[ii].setR(N[ii].getR() + move);
+	  Rnew=N[ii].getR();
+	  Vnew=N[ii].getV();
+	  auxx=int((nx-2)*(Rnew[0]-DELTA)/l);
+          auxy=int((ny-2)*(Rnew[1]-DELTA)/l);
+	  if(auxx<0)auxx=(nx-2)-((-auxx)%(nx-2));
+	  if(auxy<0)auxy=(ny-2)-((-auxy)%(ny-2));
+	  auxx=(auxx)%(nx-2);
+	  auxy=(auxy)%(ny-2);
+	  Rnew[0]=auxx*l/(nx-2)+DELTA;
+	  Rnew[1]=auxy*l/(ny-2)+DELTA;
+	  N[ii].setV(Vnew);
+	  N[ii].setR(Rnew);
+	}
+    }
+}
+
+void evolve_system(Body * N, data_t & data, data_q & Q, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, double coefx, double coefv, int seed)
+{
+  //set initial and boundary conditions
+  Get_Q(N, Q, nx, ny,l-2*DELTA, Nmax);
+  initial_conditions(data, nx, ny);
+  boundary_conditions(data, nx, ny, N ,l, Nmax);
+  // evolve
+  evolve(data, nx, ny, NSTEPS, Q);
+  update_and_check_pos2(N, nx, ny, l-2*DELTA, Nmax, data, mu, sigma, dt, coefx, coefv, seed);
+  Update_boundary(N, nx, ny, l-2*DELTA, Nmax, data);
+}
+
+void PEFRL(Body * N, data_t & data, data_q & Q, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, int seed)
+{
+  evolve_system(N, data, Q, nx, ny, l, Nmax, mu, sigma, dt, Zi, 0.0, seed);
+  evolve_system(N, data, Q, nx, ny, l, Nmax, mu, sigma, dt, Xi, coef1, seed);
+  evolve_system(N, data, Q, nx, ny, l, Nmax, mu, sigma, dt, coef2, Lambda, seed);
+  evolve_system(N, data, Q, nx, ny, l, Nmax, mu, sigma, dt, Xi, Lambda, seed);
+  evolve_system(N, data, Q, nx, ny, l, Nmax, mu, sigma, dt, Zi, coef1, seed);
 }
 
 void print_fractal (int nx, int ny, data_t & data)
