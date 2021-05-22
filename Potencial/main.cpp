@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     double move_x, move_y;
     Vector3D move;
     double tdibujo = 0;
-    double dt=0.01;
+    double dt=0.001;
 
     double x, y, z, vx, vy, vz, q0, x0 = 1, y0 = 1;
 
@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     double dy = Ly /(1.2*(Ny + 1));
     //Declare potential and density array
     data_t potential(NX*NY);
-    data_q Q(NX*NY,{0});
+
     for (int i=0; i<N;i++)
       {
         // Initial positions in cubic lattice
@@ -42,19 +42,25 @@ int main(int argc, char **argv)
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false);
 	//Molecule[i].print();
       }
-    start_animation(argc);
-    
-    for (int t = 0; t < 20000; t++)
+    //start_animation(argc);
+
+    //Calculate initial potential
+    initial_conditions(potential, NX, NY);
+    boundary_conditions(potential, NX, NY, Molecule, Lx, N);
+    evolve(potential, NX, NY, NSTEPS);
+    for (int t = 0; t < 2000; t++)
     {
-      if (t % 1 == 0)
+      /*
+      if (t % 100 == 0)
         {
 	     begin_frame(argc);
              for (int k = 0; k < N; k++)
                 Molecule[k].print();
 	     end_frame(argc);
         }
+      */
       
-      PEFRL(Molecule, potential, Q, NX, NY, Lx, N, mu, sigma, dt, t);
+      PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t);
     }
     print_fractal(NX,NY, potential);
     /*
