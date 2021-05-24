@@ -69,7 +69,7 @@ public:
     inline double getK() { return 0.5 * m * norm2(v); };
 
     // print gnuplot animation
-    inline void print() { std::cout << "," << r.x() << "+0.05*cos(t)," << r.y() << "+0.05*sin(t)"; };
+    inline void print() { std::cout << "," << r.x() << "+0.005*cos(t)," << r.y() << "+0.005*sin(t)"; };
 
     //-- Friends --
 

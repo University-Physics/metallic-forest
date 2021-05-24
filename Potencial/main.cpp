@@ -11,16 +11,16 @@ int main(int argc, char **argv)
 {
     Body Molecule[N];
     CRandom rand(42);
-    double mu = 0, sigma = 0.1;
+    double mu = 0, sigma = 0.001;
     double move_x, move_y;
     Vector3D move;
     double tdibujo = 0;
-    double dt=0.001;
+    double dt=0.01;
 
-    double x, y, z, vx, vy, vz, q0, x0 = 1, y0 = 1;
+    double x, y, z, vx, vy, vz, q0, x0 = 0.25, y0 = 0.25;
 
-    double dx = Lx /(1.2*(Nx + 1));
-    double dy = Ly /(1.2*(Ny + 1));
+    double dx = Lx /(2*(Nx + 1));
+    double dy = Ly /(2*(Ny + 1));
     //Declare potential and density array
     data_t potential(NX*NY);
 
@@ -42,28 +42,29 @@ int main(int argc, char **argv)
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false);
 	//Molecule[i].print();
       }
-    //start_animation(argc);
+    start_animation(argc);
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
     boundary_conditions(potential, NX, NY, Molecule, Lx, N);
-    evolve(potential, NX, NY, NSTEPS);
-    for (int t = 0; t < 2000; t++)
+    evolve(potential, NX, NY, NSTEPS, NSTEPS);
+    
+    for (int t = 0; t < 5000; t++)
     {
-      /*
-      if (t % 100 == 0)
+      
+      if (t % 1000 == 0)
         {
 	     begin_frame(argc);
              for (int k = 0; k < N; k++)
                 Molecule[k].print();
 	     end_frame(argc);
         }
-      */
+      
       
       PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t);
     }
     print_fractal(NX,NY, potential);
-    /*
+    
     std::ofstream myfile;
     myfile.open ("example.txt");
     for (int i=0; i<N;i++)
@@ -71,7 +72,12 @@ int main(int argc, char **argv)
 	myfile<<i<<"\t"<<Molecule[i].getoc()<<"\t"<<Molecule[i].getR()[0]<<"\t" << Molecule[i].getR()[1]<<"\n";
       }
     myfile.close();
+    /*
+    start_gnuplot();
+    print_screen(potential, NX, NY);
+    print_gnuplot(potential, NX, NY);
     */
+    //print_potential(NX, NY, potential);
     return 0;
 }
 
