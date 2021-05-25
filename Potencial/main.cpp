@@ -42,25 +42,24 @@ int main(int argc, char **argv)
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false);
 	//Molecule[i].print();
       }
-    start_animation(argc);
+    //start_animation(argc);
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
     boundary_conditions(potential, NX, NY, Molecule, Lx, N);
     evolve(potential, NX, NY, NSTEPS, NSTEPS);
-    
+ 
     for (int t = 0; t < 5000; t++)
     {
-      
-      if (t % 1000 == 0)
+      /*
+      if (t % 100 == 0)
         {
 	     begin_frame(argc);
              for (int k = 0; k < N; k++)
                 Molecule[k].print();
 	     end_frame(argc);
         }
-      
-      
+      */
       PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t);
     }
     print_fractal(NX,NY, potential);
