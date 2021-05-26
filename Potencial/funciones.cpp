@@ -87,9 +87,6 @@ void stabilization_step(data_t & data, int nx, int ny)
 {
   for(int ix = 1; ix < nx-1; ++ix) {
         for(int iy = 1; iy < ny-1; ++iy) {
-            // check that this cell is NOT a boundary condition or a border
-            //if ( (ix == nx/2) && (ny/3 <= iy) && (iy <= 2*ny/3) ) continue;
-            // update the cell
 	  if(data[ix*ny + iy].ocupation==false && data[ix*ny + iy].pivot==false)
 	    {
             data[ix*ny + iy].value = (data[(ix+1)*ny + iy].value + data[(ix-1)*ny + iy].value + data[ix*ny + iy+1].value + data[ix*ny + iy-1].value)/4.0;
@@ -105,9 +102,6 @@ void stabilization_step(data_t & data, int nx, int ny)
     // frontera
   for(int ix = 1; ix < nx/10; ++ix) {
     for(int iy = 1; iy < ny/10; ++iy) {
-            // check that this cell is NOT a boundary condition or a border
-            //if ( (ix == nx/2) && (ny/3 <= iy) && (iy <= 2*ny/3) ) continue;
-            // update the cell
       if(data[(ix*10)*ny + (iy*10)].ocupation==false)
 	{
 	  data[(ix*10)*ny + (iy*10)].value = (data[((ix+1)*10)*ny + (iy*10)].value + data[(ix-1)*10*ny + (iy*10)].value + data[(ix*10)*ny + (iy+1)*10].value + data[(ix*10)*ny + 10*(iy-1)].value)/4.0;
@@ -125,9 +119,6 @@ void relaxation_step(data_t & data, int nx, int ny)
     // frontera
     for(int ix = 1; ix < nx-1; ++ix) {
         for(int iy = 1; iy < ny-1; ++iy) {
-            // check that this cell is NOT a boundary condition or a border
-            //if ( (ix == nx/2) && (ny/3 <= iy) && (iy <= 2*ny/3) ) continue;
-            // update the cell
 	  if(data[ix*ny + iy].ocupation==false)
 	    {
             data[ix*ny + iy].value = (data[(ix+1)*ny + iy].value + data[(ix-1)*ny + iy].value + data[ix*ny + iy+1].value + data[ix*ny + iy-1].value)/4.0;
@@ -169,7 +160,7 @@ void print_gnuplot(const data_t & data, int nx, int ny)
         }
         std::cout << "\n";
     }
-    std::cout << "e\n";
+    std::cout << "\n";
 }
 
 void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax)
@@ -189,7 +180,7 @@ void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax)
 void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, double gamma)
 {
   Vector3D aux, aux1, aux2, Faux, dr;
-  double q1, q2;
+  double q1, q2, d_aux;
   int auxx, auxy;
   bool auxoc;
   
@@ -206,9 +197,9 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 	N[ii].resetForce();
 	auxx=int(aux[0]/DELTA);
 	auxy=int(aux[1]/DELTA);
-	if(1<=auxx<nx-1 && 1<=auxy<ny-1)
+	if(1<=auxx && auxx<nx-1 && 1<=auxy && auxy<ny-1)
 	  {
-	    /*
+	    
 	    for(int jj = 0; jj<ii; jj++)
 	      {
 		
@@ -216,12 +207,14 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 		  aux2=N[jj].getR();
 		  dr=aux2-aux1;
 		  q2=N[jj].getQ();
-		  Faux=q1*q2*dr/(norm(dr)*norm(dr)*norm(dr));
+		  d_aux=norm(dr);
+		  if(d_aux<0.1)d_aux=0.1;
+		  Faux=q1*q2*dr/(d_aux*d_aux*d_aux);
 		  N[ii].addForce(Faux);
 		  N[jj].addForce((-1)*Faux);
 		}
 	      }
-	    */
+	    
 	    Faux[0]=q1*(data[(auxx-1)*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/(2*Delta)-gamma*aux1[0];
 	    Faux[1]=q1*(data[auxx*ny+(auxy-1)].value-data[auxx*ny+(auxy+1)].value)/(2*Delta)-gamma*aux1[1];
 	    N[ii].addForce(Faux);
@@ -283,8 +276,16 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
           auxy=int((Rnew[1]-DELTA)/DELTA);
 	  d_auxx=(Rnew[0]-DELTA)-auxx*DELTA;
 	  d_auxy=(Rnew[1]-DELTA)-auxy*DELTA;
-	  if(auxx<0)auxx=(nx-2)-((-auxx)%(nx-2));
-          if(auxy<0)auxy=(ny-2)-((-auxy)%(ny-2));
+	  if(Rnew[0]-DELTA<0)
+	    {
+	      auxx=-int(-(Rnew[0]-DELTA)/DELTA);
+	      auxx=(nx-2)-((-auxx)%(nx-2));
+	    }
+          if(Rnew[1]-DELTA<0)
+	    {
+	      auxx=-int(-(Rnew[1]-DELTA)/DELTA);
+	      auxy=(ny-2)-((-auxy)%(ny-2));
+	    }
           auxx=(auxx)%(nx-2);
 	  auxy=(auxy)%(ny-2);
 	  Rnew[0]=(auxx+1)*DELTA+d_auxx;
