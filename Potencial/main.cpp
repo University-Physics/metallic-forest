@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <cstdlib>
 
 
 std::string filename(int n);
@@ -16,6 +17,8 @@ int main(int argc, char **argv)
     Vector3D move;
     double tdibujo = 0;
     double dt=0.01;
+    double V=10.0;
+    double radio=0.01;
 
     double x, y, z, vx, vy, vz, q0, x0 = 0.25, y0 = 0.25;
 
@@ -32,51 +35,42 @@ int main(int argc, char **argv)
         z = 0;
 
         // Initial nule velocities
-        vx = 0;
-        vy = 0;
+        vx = rand.gauss(mu, sigma);
+        vy = rand.gauss(mu, sigma);
         vz = 0;
 
 	q0=-0.01;
-	if(i%2==0) q0=0.01;
+	if(i%std::atoi(argv[1])==0) q0*=-1;
 
-        Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false);
+        Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false, radio);
 	//Molecule[i].print();
       }
     //start_animation(argc);
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
-    boundary_conditions(potential, NX, NY, Molecule, Lx, N);
+    boundary_conditions(potential, NX, NY, Molecule, Lx, N, V);
     evolve(potential, NX, NY, NSTEPS, NSTEPS);
- 
+    //std::string filename="Fract_size"+std::to_string(std::atoi(argv[1]))+".txt";
+    
     for (int t = 0; t < 5000; t++)
     {
-      /*
-      if (t % 100 == 0)
+      /* 
+      if (t % 200 == 0)
         {
+	  //print_potential_size(NX, NY, potential, filename, t);
+	 
 	     begin_frame(argc);
              for (int k = 0; k < N; k++)
                 Molecule[k].print();
 	     end_frame(argc);
+	 
         }
       */
-      PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t);
+      PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[2]), V);
     }
-    print_fractal(NX,NY, potential);
-    
-    std::ofstream myfile;
-    myfile.open ("example.txt");
-    for (int i=0; i<N;i++)
-      {
-	myfile<<i<<"\t"<<Molecule[i].getoc()<<"\t"<<Molecule[i].getR()[0]<<"\t" << Molecule[i].getR()[1]<<"\n";
-      }
-    myfile.close();
-    /*
-    start_gnuplot();
-    print_screen(potential, NX, NY);
-    print_gnuplot(potential, NX, NY);
-    */
-    //print_potential(NX, NY, potential);
+    std::string filename="Out"+std::to_string(std::atoi(argv[1]))+"I"+std::to_string(std::atoi(argv[2]))+"S.txt";
+    print_fractal(NX,NY, potential, filename);
     return 0;
 }
 
