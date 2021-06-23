@@ -13,12 +13,12 @@ private:
     // It has a mass and a total potential energy U.
     double m, U;
     // For this first implementation I'll ignore the geometry and assume it as a point mass.
-    double q;
+    double q, radii;
 
     bool oc;
         
 public:
-  void init(double x, double y, double z, double vx, double vy, double vz, double mass = 1.0, double charge = 1.0, bool ocup = false);
+  void init(double x, double y, double z, double vx, double vy, double vz, double mass = 1.0, double charge = 1.0, bool ocup = false, double radio=0.001);
     void printState(double t, std::ofstream &File);
 
     // --Inline Functions --
@@ -49,6 +49,9 @@ public:
 
     // Get charge
     inline double getQ(void) { return q; };
+
+    // Get radii
+    inline double getrad(void) { return radii; };
 
     // Get ocupation
     inline bool getoc(void) { return oc; };
@@ -86,13 +89,14 @@ public:
  * @param double vx, vy, vz: Initial velocity of the body.
  * @param double m: Mass of the body. Defaults to 1.
  */
-void Body::init(double x, double y, double z, double vx, double vy, double vz, double mass, double charge, bool ocup)
+void Body::init(double x, double y, double z, double vx, double vy, double vz, double mass, double charge, bool ocup, double radio)
 {
     r.load(x, y, z);
     v.load(vx, vy, vz);
     m = mass;
     q = charge;
     oc = ocup;
+    radii = radio;
     resetForce();
     resetU();
 }

@@ -1,15 +1,16 @@
-all:anim.gif
+all:Fractal_imbalance.png
 OBJ= main.o
+
 %.o:%.cpp constantes.h
-	g++ -c -O3 -fopenmp $< -n
+	g++ -c -O3 $< -n
 
 main.x:$(OBJ)
+	g++ -O3 -g -pg -Wall $^ -o $@
 
-	g++ -O3 -g -pg -Wall -fopenmp $^  -o $@
+Fractal_imbalance.png: main.x run.sh Fractal_dim.py
+	bash run.sh
+	python3 Fractal_dim.py
 
-anim.gif: main.x
-	time ./main.x save movie | gnuplot
-	python3 grafica.py
 .PHONY:clean
 clean:
 	rm -f *.x *.o 

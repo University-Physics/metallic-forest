@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import re
-archivo=open("data.txt")
+archivo=open("Out2.txt")
 A=archivo.read().split("\n")
 X=[]
 Y=[]

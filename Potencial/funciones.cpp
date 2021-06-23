@@ -13,21 +13,21 @@
     }
 }
 
- void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int Nmax)
+void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
 {
     int ix, iy;
     Vector3D aux, aux1;
     // first row
     ix = 0;
     for(int iy = 0; iy < ny; ++iy) {
-        data[ix*ny + iy].value = -1.0;
+        data[ix*ny + iy].value = -V_diff/2;
 	data[ix*ny + iy].electrode = true;
 	data[ix*ny + iy].ocupation = true;
     }
     // last row
     ix = nx-1;
     for(int iy = 0; iy < ny; ++iy) {
-      data[ix*ny + iy].value = 1.0;
+      data[ix*ny + iy].value = V_diff/2;
       data[ix*ny + iy].electrode = true;
       data[ix*ny + iy].ocupation = false;
     }
@@ -35,24 +35,24 @@
     
     iy = 0;
     for(int ix = 1; ix < nx; ++ix) {
-        data[ix*ny + iy].value = 1.0;
+        data[ix*ny + iy].value = V_diff/2;
 	data[ix*ny + iy].electrode = true;
 	data[ix*ny + iy].ocupation = false;
     }
     // last row
     iy = ny-1;
     for(int ix = 1; ix < nx; ++ix) {
-      data[ix*ny + iy].value = 1.0;
+      data[ix*ny + iy].value = V_diff/2;
       data[ix*ny + iy].electrode = true;
       data[ix*ny + iy].ocupation = false;
     }
-    
+
     for(int ii=0;ii<Nmax;ii++)
     {
       aux=N[ii].getR();
       if(N[ii].getoc()==true && data[int(nx*aux[0]/l)*ny + int(ny*aux[1]/l)].electrode == false)
 	{
-	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=-1.0;
+	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=-V_diff/2;
 	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;
 	}
     }
@@ -71,12 +71,12 @@ void evolve(data_t & data, int nx, int ny, int nsteps, int ns_est)
       //print_screen(data, nx, ny);
       //print_gnuplot(data, nx, ny);
     }
-    for(int istep = 0; istep < ns_est; ++istep){
+    for(int istep = 0; istep < 3*ns_est; ++istep){
       stabilization_step(data, nx, ny);
       //print_screen(data, nx, ny);
       //print_gnuplot(data, nx, ny);
     }
-    for(int istep = 0; istep < nsteps; ++istep) {
+    for(int istep = 0; istep < 3*nsteps; ++istep) {
       relaxation_step(data, nx, ny);
       //print_screen(data, nx, ny);
       //print_gnuplot(data, nx, ny);
@@ -160,7 +160,7 @@ void print_gnuplot(const data_t & data, int nx, int ny)
         }
         std::cout << "\n";
     }
-    std::cout << "\n";
+    std::cout << "e\n";
 }
 
 void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax)
@@ -180,7 +180,7 @@ void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax)
 void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, double gamma)
 {
   Vector3D aux, aux1, aux2, Faux, dr;
-  double q1, q2, d_aux;
+  double q1, q2, d_aux, r_aux;
   int auxx, auxy;
   bool auxoc;
   
@@ -208,8 +208,15 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 		  dr=aux2-aux1;
 		  q2=N[jj].getQ();
 		  d_aux=norm(dr);
-		  if(d_aux<0.1)d_aux=0.1;
+		  if(d_aux<2*N[ii].getrad())d_aux=2*N[ii].getrad();
 		  Faux=q1*q2*dr/(d_aux*d_aux*d_aux);
+		  
+		  if(norm(dr)<N[ii].getrad())
+		    {
+		      r_aux=std::sqrt(1/(1/N[ii].getrad()+1/N[jj].getrad()));
+		      Faux-=4/3*r_aux*std::sqrt(norm(dr))*dr;
+		    }
+		  
 		  N[ii].addForce(Faux);
 		  N[jj].addForce((-1)*Faux);
 		}
@@ -238,7 +245,7 @@ bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data)
       qaux=N[ii].getQ();
       auxx=int(aux[0]/DELTA);
       auxy=int(aux[1]/DELTA);
-      if( qaux>0 && 1<=auxx<nx-1 && 1<=auxy<ny-1)
+      if( qaux>0 && 1<=auxx && auxx<nx-1 && 1<=auxy && auxy<ny-1)
 	{
 	  if(data[(auxx+1)*ny+auxy].ocupation == true ||data[(auxx-1)*ny+auxy].ocupation == true || data[auxx*ny+(auxy+1)].ocupation == true ||  data[auxx*ny+(auxy-1)].ocupation == true)
 	    {
@@ -255,7 +262,7 @@ bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data)
 }
 void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, double mu, double sigma, double dt, double coefx, double coefv, int seed)
 {
-  Vector3D Rnew, Vnew, move;
+  Vector3D Rnew, Vnew, move, DR, Rold, Vold;
   double move_x, move_y, d_auxx, d_auxy;
   int auxx, auxy;
   CRandom rand(seed);
@@ -264,6 +271,8 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
     {
       if(N[ii].getoc()==false)
 	{
+	  Rold=N[ii].getR();
+	  Vold=N[ii].getV();
 	  N[ii].moveV(dt, coefx);
 	  N[ii].moveR(dt, coefv);
 	  move_x = rand.gauss(mu, sigma);
@@ -272,6 +281,20 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 	  N[ii].setR(N[ii].getR() + (coefx)* move);
 	  Rnew=N[ii].getR();
 	  Vnew=N[ii].getV();
+	  DR=Rnew-Rold;
+	  if(Rnew[0]>1 || Rnew[0]<0)
+	    {
+	      Rnew[0]=Rold[0]-DR[0];
+	      Vnew[0]*=-1;
+	    }
+	  if(Rnew[1]>1 || Rnew[1]<0)
+	    {
+	      Rnew[1]=Rold[1]-DR[1];
+	      Vnew[1]*=-1;
+	    }
+	  N[ii].setV(Vnew);
+	  N[ii].setR(Rnew);
+	  /*
 	  auxx=int((Rnew[0]-DELTA)/DELTA);
           auxy=int((Rnew[1]-DELTA)/DELTA);
 	  d_auxx=(Rnew[0]-DELTA)-auxx*DELTA;
@@ -292,11 +315,12 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 	  Rnew[1]=(auxy+1)*DELTA+d_auxy;
 	  N[ii].setV(Vnew);
 	  N[ii].setR(Rnew);
+	  */
 	}
     }
 }
 
-void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, double coefx, double coefv, int seed)
+void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, double coefx, double coefv, int seed, double V_diff)
 {
   bool cond;
   //update positions and boundaries
@@ -305,23 +329,23 @@ void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, 
   //Obtain potential using fast algorithm
   if(cond==true)
     {
-      evolve_opt(data, nx, ny, l, Nmax, N);
+      evolve_opt(data, nx, ny, l, Nmax, N, V_diff);
     }
 }
 
-void PEFRL(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, int seed)
+void PEFRL(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, int seed, double V_diff)
 {
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, 0.0, seed);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, coef1, seed);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, coef2, Lambda, seed);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, Lambda, seed);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, coef1, seed);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, 0.0, seed, V_diff);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, coef1, seed, V_diff);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, coef2, Lambda, seed, V_diff);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, Lambda, seed, V_diff);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, coef1, seed, V_diff);
 }
 
-void print_fractal (int nx, int ny, data_t & data)
+void print_fractal (int nx, int ny, data_t & data, std::string filename)
 {
   std::ofstream myfile;
-  myfile.open ("data.txt");
+  myfile.open (filename);
   for(int ix = 0; ix < nx; ++ix) {
         for(int iy = 0; iy < ny; ++iy) {
 	  myfile<< ix << "  "<<iy<<"   "<< data[ix*ny + iy].ocupation << "\n";
@@ -332,10 +356,24 @@ void print_fractal (int nx, int ny, data_t & data)
     myfile.close();
 }
 
-void print_potential (int nx, int ny, data_t & data)
+void print_potential_size (int nx, int ny, data_t & data, std::string filename, int t)
 {
   std::ofstream myfile;
-  myfile.open ("pot.txt");
+  int N=0;
+  myfile.open (filename, std::fstream::app);
+  for(int ix = 1; ix < nx-1; ++ix) {
+        for(int iy = 1; iy < ny-1; ++iy) {
+	  if(data[ix*ny+iy].ocupation==true) N+=1;
+        }
+    }
+    myfile<< t << "\t"<<N<<"\n";
+    myfile.close();
+}
+
+void print_potential (int nx, int ny, data_t & data, std::string filename)
+{
+  std::ofstream myfile;
+   myfile.open (filename);
   for(int ix = 0; ix < nx; ++ix) {
         for(int iy = 0; iy < ny; ++iy) {
 	  myfile<< ix << "\t"<<iy<<"\t"<< data[ix*ny + iy].value << "\n";
@@ -345,10 +383,10 @@ void print_potential (int nx, int ny, data_t & data)
     myfile.close();
 }
 
-void evolve_opt(data_t & data, int nx, int ny, double l, int Nmax, Body * N)
+void evolve_opt(data_t & data, int nx, int ny, double l, int Nmax, Body * N, double V_diff)
 {
   //doesn't reset values in order to obtain faster convergence and increase performance
-  boundary_conditions(data, nx, ny, N ,l, Nmax);
+  boundary_conditions(data, nx, ny, N ,l, Nmax, V_diff);
   // evolve
   evolve(data, nx, ny, NSTEPS/10, NSTEPS/10);
 }
