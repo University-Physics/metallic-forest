@@ -35,13 +35,13 @@ T1: main.x varyT1.sh
 	nohup bash varyT1.sh
 
 T2: main.x varyT2.sh
-	nohup bash varyI2.sh
+	nohup bash varyT2.sh
 
 V1: main.x varyV1.sh
 	nohup bash varyV1.sh
 
 V2: main.x varyV2.sh
-	nohup bash varyI1.sh
+	nohup bash varyV2.sh
 
 Fractal_imbalance.png: main.x run.sh Fractal_dim.py
 	bash run.sh
