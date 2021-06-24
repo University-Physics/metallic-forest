@@ -122,16 +122,16 @@ def graf(filename, l, rep):
     data=np.loadtxt(filename, delimiter='\t')
     dataplot=np.zeros((l,2))
     for i in range(len(data[:,0])):
-        dataplot[i%l,0]=(1-2/data[i,0])
+        dataplot[i%l,0]=data[i,0]*0.001
         dataplot[i%l,1]+=data[i,1]
     dataplot[:,1]/=rep
     plt.figure()
     plt.scatter(dataplot[:,0], dataplot[:,1], color='k', label=r'$V/V_{min}=10$, $R_A/L=0.01$')
     plt.plot(dataplot[:,0], dataplot[:,1], color='k')
-    plt.xlabel(r'$\frac{N_A-N_B}{N_A+N_B}$')
+    plt.xlabel(r'$kT$')
     plt.ylabel(r'Dimensión fractal')
     plt.legend()
-    plt.savefig('Fractal_imbalance.png')
+    plt.savefig('Fractal_temperature.png')
     return
 
 def graf_size(filename):
@@ -145,11 +145,4 @@ def graf_size(filename):
 
 plot()
 graf("Results.txt", 10, 10)
-    
-#plot(24 ,0)
 
-#graf("Ver5.txt", "Ver3.txt", 24, 5, 5)
-
-#graf_size("Fract_size100.txt")
-
-#plot1(10)
