@@ -12,13 +12,13 @@ int main(int argc, char **argv)
 {
     Body Molecule[N];
     CRandom rand(42);
-    double mu = 0, sigma = 0.001;
+    double mu = 0, sigma = 0.001, sigma1 = 0.001*std::atoi(argv[1]);
     double move_x, move_y;
     Vector3D move;
     double tdibujo = 0;
     double dt=0.01;
-    double V=10.0;
-    double radio=0.01;
+    double V=0.1*std::atoi(argv[2]);
+    double radio=0.01*std::atoi(argv[3]);
 
     double x, y, z, vx, vy, vz, q0, x0 = 0.25, y0 = 0.25;
 
@@ -35,12 +35,12 @@ int main(int argc, char **argv)
         z = 0;
 
         // Initial nule velocities
-        vx = rand.gauss(mu, sigma);
-        vy = rand.gauss(mu, sigma);
+        vx = rand.gauss(mu, sigma1);
+        vy = rand.gauss(mu, sigma1);
         vz = 0;
 
 	q0=-0.01;
-	if(i%std::atoi(argv[1])==0) q0*=-1;
+	if(i%std::atoi(argv[4])==0) q0*=-1;
 
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false, radio);
 	//Molecule[i].print();
@@ -67,9 +67,9 @@ int main(int argc, char **argv)
 	 
         }
       */
-      PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[2]), V);
+      PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V);
     }
-    std::string filename="Out"+std::to_string(std::atoi(argv[1]))+"I"+std::to_string(std::atoi(argv[2]))+"S.txt";
+    std::string filename="Out"+std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S.txt";
     print_fractal(NX,NY, potential, filename);
     return 0;
 }
