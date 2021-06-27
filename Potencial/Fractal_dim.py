@@ -94,55 +94,141 @@ def fractal_dimension(array, max_box_size = None, min_box_size = 1, n_samples = 
     return(coeffs[0])
 
 
-def plot():
+def read_imbalance(T, V, R):
     data=np.zeros((1,2))
-    outfile="Results.txt"
+    outfile="Results_imbalance"+str(int(T))+"T"+str(int(V))+"V"+str(int(R))+"R.txt"
     for j in range(10):
         for i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-            filename="Out"+str(int(i))+"I"+str(int(j+1))+"S.txt"
+            filename="Out"+str(int(T))+"T"+str(int(V))+"V"+str(int(R))+"R"+str(int(i))+"I"+str(int(j+1))+"S.txt"
             data[0,0]=i
             data[0,1]=fractal_dimension(opening(filename), max_box_size = None, min_box_size = 1, n_samples = 100, n_offsets = 0, plot = False)
             with open(outfile, "a") as text_file:
                 text_file.write(str(data[0,0])+ "\t"+str(data[0,1])+"\n")
     return
 
-def plot1(ver):
+def read_temperature(V, R, I):
     data=np.zeros((1,2))
-    outfile="Ver"+str(int(ver))+".txt"
-    for i in [1, 2, 3, 4]:
-        filename="Out"+str(int(i))+".txt"
-        data[0,0]=i
-        data[0,1]=fractal_dimension(opening(filename), max_box_size = None, min_box_size = 1, n_samples = 100, n_offsets = 0, plot = False)
-        with open(outfile, "a") as text_file:
-            text_file.write(str(data[0,0])+ "\t"+str(data[0,1])+"\n")
-    return 
-    
+    outfile="Results_temperature"+str(int(V))+"V"+str(int(R))+"R"+str(int(I))+"I.txt"
+    for j in range(10):
+        for i in [1, 2, 5, 7, 10, 15, 20, 30, 40, 50, 70, 100]:
+            filename="Out"+str(int(i))+"T"+str(int(V))+"V"+str(int(R))+"R"+str(int(I))+"I"+str(int(j+1))+"S.txt"
+            data[0,0]=i
+            data[0,1]=fractal_dimension(opening(filename), max_box_size = None, min_box_size = 1, n_samples = 100, n_offsets = 0, plot = False)
+            with open(outfile, "a") as text_file:
+                text_file.write(str(data[0,0])+ "\t"+str(data[0,1])+"\n")
+    return
 
-def graf(filename, l, rep):
+def read_radii(T, V, I):
+    data=np.zeros((1,2))
+    outfile="Results_radii"+str(int(T))+"T"+str(int(V))+"V"+str(int(I))+"I.txt"
+    for j in range(10):
+        for i in [1, 2, 3, 4, 5]:
+            filename="Out"+str(int(T))+"T"+str(int(V))+"V"+str(int(i))+"R"+str(int(I))+"I"+str(int(j+1))+"S.txt"
+            data[0,0]=i
+            data[0,1]=fractal_dimension(opening(filename), max_box_size = None, min_box_size = 1, n_samples = 100, n_offsets = 0, plot = False)
+            with open(outfile, "a") as text_file:
+                text_file.write(str(data[0,0])+ "\t"+str(data[0,1])+"\n")
+    return
+
+def read_potential(T, R, I):
+    data=np.zeros((1,2))
+    outfile="Results_potential"+str(int(T))+"T"+str(int(R))+"R"+str(int(I))+"I.txt"
+    for j in range(10):
+        for i in [1, 2, 5, 7, 10, 15, 20, 30, 40, 50, 70, 100, 200, 250, 300, 350, 400, 500, 600, 700]:
+            filename="Out"+str(int(T))+"T"+str(int(i))+"V"+str(int(R))+"R"+str(int(I))+"I"+str(int(j+1))+"S.txt"
+            data[0,0]=i
+            data[0,1]=fractal_dimension(opening(filename), max_box_size = None, min_box_size = 1, n_samples = 100, n_offsets = 0, plot = False)
+            with open(outfile, "a") as text_file:
+                text_file.write(str(data[0,0])+ "\t"+str(data[0,1])+"\n")
+    return
+
+def plot_imbalance(filename, l, rep, outfile, labelphrase):
     data=np.loadtxt(filename, delimiter='\t')
     dataplot=np.zeros((l,2))
     for i in range(len(data[:,0])):
-        dataplot[i%l,0]=data[i,0]*0.001
+        dataplot[i%l,0]=1-2/data[i,0]
         dataplot[i%l,1]+=data[i,1]
     dataplot[:,1]/=rep
     plt.figure()
-    plt.scatter(dataplot[:,0], dataplot[:,1], color='k', label=r'$V/V_{min}=10$, $R_A/L=0.01$')
+    plt.scatter(dataplot[:,0], dataplot[:,1], color='k', label=labelphrase)
+    plt.plot(dataplot[:,0], dataplot[:,1], color='k')
+    plt.xlabel(r'$\frac{N_A-N_B}{N_A+N_B}$')
+    plt.ylabel(r'Dimensión fractal')
+    plt.legend()
+    plt.savefig(outfile)
+    return
+
+def plot_temperature(filename, l, rep, outfile, labelphrase):
+    data=np.loadtxt(filename, delimiter='\t')
+    dataplot=np.zeros((l,2))
+    for i in range(len(data[:,0])):
+        dataplot[i%l,0]=0.001*data[i,0]
+        dataplot[i%l,1]+=data[i,1]
+    dataplot[:,1]/=rep
+    plt.figure()
+    plt.scatter(dataplot[:,0], dataplot[:,1], color='k', label=labelphrase)
     plt.plot(dataplot[:,0], dataplot[:,1], color='k')
     plt.xlabel(r'$kT$')
     plt.ylabel(r'Dimensión fractal')
     plt.legend()
-    plt.savefig('Fractal_temperature.png')
+    plt.savefig(outfile)
     return
 
-def graf_size(filename):
+def plot_radii(filename, l, rep, outfile, labelphrase):
     data=np.loadtxt(filename, delimiter='\t')
+    dataplot=np.zeros((l,2))
+    for i in range(len(data[:,0])):
+        dataplot[i%l,0]=0.01*data[i,0]
+        dataplot[i%l,1]+=data[i,1]
+    dataplot[:,1]/=rep
     plt.figure()
-    plt.scatter(data[:,0], data[:,1], color='k', label=r'$r_{min}/L=0.1 \: V/V_{min}=1$')
-    plt.xlabel(r'Iteración')
-    plt.ylabel(r'Partículas adheridas')
+    plt.scatter(dataplot[:,0], dataplot[:,1], color='k', label=labelphrase)
+    plt.plot(dataplot[:,0], dataplot[:,1], color='k')
+    plt.xlabel(r'$r/L$')
+    plt.ylabel(r'Dimensión fractal')
     plt.legend()
-    plt.savefig('Fractal_size.png')
+    plt.savefig(outfile)
+    return
 
-plot()
+def plot_potential(filename, l, rep, outfile, labelphrase):
+    data=np.loadtxt(filename, delimiter='\t')
+    dataplot=np.zeros((l,2))
+    for i in range(len(data[:,0])):
+        dataplot[i%l,0]=0.1*data[i,0]
+        dataplot[i%l,1]+=data[i,1]
+    dataplot[:,1]/=rep
+    plt.figure()
+    plt.scatter(dataplot[:,0], dataplot[:,1], color='k', label=labelphrase)
+    plt.plot(dataplot[:,0], dataplot[:,1], color='k')
+    plt.xlabel(r'$\frac{\Delta V q_A}{|R_A+R_B|}$')
+    plt.ylabel(r'Dimensión fractal')
+    plt.legend()
+    plt.savefig(outfile)
+    return
+
+read_imbalance(1, 1, 1)
+plot_imbalance("Results_imbalance1T1V1R.txt", 10, 10, "I1.png", "kT=0.001, R/L=0.01, V=0.1")
+read_imbalance(100, 1, 1)
+plot_imbalance("Results_imbalance100T1V1R.txt", 10, 10, "I2.png", "kT=0.1, R/L=0.01, V=0.1")
+read_imbalance(1, 100, 1)
+plot_imbalance("Results_imbalance1T100V1R.txt", 10, 10, "I3.png", "kT=0.001, R/L=0.01, V=10.0")
+read_imbalance(100, 100, 1)
+plot_imbalance("Results_imbalance100T100V1R.txt", 10, 10, "I4.png", "kT=0.1, R/L=0.01, V=10.0")
+read_radii(1, 1, 2)
+plot_radii("Results_imbalance1T1V2I.txt", 5, 10, "R1.png", "kT=0.001, V=0.1, I=0")
+read_radii(100, 1, 2)
+plot_radii("Results_imbalance100T1V2I.txt", 5, 10, "R2.png", "kT=0.1, V=0.1, I=0")
+read_radii(1, 100, 2)
+plot_radii("Results_imbalance1T100V2I.txt", 5, 10, "R3.png", "kT=0.001, V=10.0, I=0")
+read_radii(100, 100, 2)
+plot_radii("Results_imbalance100T100V2I.txt", 5, 10, "R4.png", "kT=0.1, V=10.0, I=0")
+read_temperature(1, 1, 2)
+plot_temperature("Results_temperature1V1R2I.txt", 12, 10, "T1.png", "V=0.1, R/L=0.01, I=0")
+read_temperature(100, 1, 2)
+plot_temperature("Results_temperature100V1R2I.txt", 12, 10, "T2.png", "V=10.0, R/L=0.01, I=0")
+read_potential(1, 1, 2)
+plot_potential("Results_temperature1T1R2I.txt", 20, 10, "V1.png", "kT=0.001, R/L=0.01, I=0")
+read_potential(100, 1, 2)
+plot_potential("Results_temperature1T1R2I.txt", 20, 10, "V2.png", "kT=0.1, R/L=0.01, I=0")
 graf("Results.txt", 10, 10)
 
