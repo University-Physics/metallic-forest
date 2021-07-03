@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
         y = dy + ((k / Nx) % Ny) * dy + y0;
         z = 0;
 
-        // Initial random velocities
+        // Initial null velocities
         vx = 0;
         vy = 0;
         vz = 0;
