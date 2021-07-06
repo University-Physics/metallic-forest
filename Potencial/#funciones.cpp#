@@ -214,18 +214,18 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 	    for(int jj = 0; jj<ii; jj++)
 	      {
 		
-		if(N[jj].getoc()==false){ // 
+		if(N[jj].getoc()==false){ // Condition of alive particles (It is not part of the electrode.)
 		  aux2=N[jj].getR();
-		  dr=aux2-aux;
+		  dr=aux2-aux; // Relative vector between particles
 		  q2=N[jj].getQ();
-		  d_aux=norm(dr);
-		  if(d_aux<2*N[ii].getrad())d_aux=2*N[ii].getrad();
+		  d_aux=norm(dr); 
+		  if(d_aux<2*N[ii].getrad())d_aux=2*N[ii].getrad(); // Coulomb Force for R_rel less than 2 times the radius
 		  Faux=q1*q2*dr/(d_aux*d_aux*d_aux);
 		  
-		  if(norm(dr)<N[ii].getrad())
+		  if(d_aux<N[ii].getrad())
 		    {
 		      r_aux=std::sqrt(1/(1/N[ii].getrad()+1/N[jj].getrad()));
-		      Faux-=4/3*r_aux*std::sqrt(norm(dr))*dr;
+		      Faux-=4/3*r_aux*std::sqrt(norm(dr))*dr; //Interpenetration force
 		    }
 		  
 		  N[ii].addForce(Faux);
@@ -235,7 +235,7 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 	    
 	    Faux[0]=q1*(data[(auxx-1)*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/(2*Delta)-gamma*aux1[0];
 	    Faux[1]=q1*(data[auxx*ny+(auxy-1)].value-data[auxx*ny+(auxy+1)].value)/(2*Delta)-gamma*aux1[1];
-	    N[ii].addForce(Faux);
+	    N[ii].addForce(Faux); // It is added the other forces
 	  }
       }
     }
@@ -295,12 +295,12 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 	  DR=Rnew-Rold;
 	  if(Rnew[0]>1 || Rnew[0]<0)
 	    {
-	      Rnew[0]=Rold[0]-DR[0];
+	      Rnew[0]=Rold[0]-DR[0];//2*Rold[0]-Rnew[0]
 	      Vnew[0]*=-1;
 	    }
 	  if(Rnew[1]>1 || Rnew[1]<0)
 	    {
-	      Rnew[1]=Rold[1]-DR[1];
+	      Rnew[1]=Rold[1]-DR[1];//2*Rold[1]-Rnew[1]
 	      Vnew[1]*=-1;
 	    }
 	  N[ii].setV(Vnew);
