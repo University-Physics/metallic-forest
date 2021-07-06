@@ -29,6 +29,7 @@ void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int 
     Vector3D aux, aux1;
     // first row
     ix = 0;
+<<<<<<< HEAD
     for(int iy = 0; iy < ny; ++iy) {       //     #----
       data[ix*ny + iy].value = -V_diff/2;  //     #----
       data[ix*ny + iy].electrode = true;   //     #----
@@ -40,10 +41,12 @@ void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int 
       data[ix*ny + iy].value = V_diff/2;   //     ----#
       data[ix*ny + iy].electrode = true;   //     ----#
       data[ix*ny + iy].ocupation = false;  //     ----#
+
     }
     // first row
     
     iy = 0;
+<<<<<<< HEAD
     for(int ix = 1; ix < nx; ++ix) {       //    #####
       data[ix*ny + iy].value = V_diff/2;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
@@ -51,6 +54,7 @@ void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int 
     }
     // last row                             
     iy = ny-1;
+<<<<<<< HEAD
     for(int ix = 1; ix < nx; ++ix) {       //    -----
       data[ix*ny + iy].value = V_diff/2;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
@@ -92,6 +96,7 @@ void evolve(data_t & data, int nx, int ny, int nsteps, int ns_est)
       relaxation_step(data, nx, ny);
       //print_screen(data, nx, ny);
       //print_gnuplot(data, nx, ny);
+<<<<<<< HEAD
     }
 }
 
@@ -119,10 +124,12 @@ void stabilization_step(data_t & data, int nx, int ny)
 	  data[(ix*10)*ny + (iy*10)].value = (data[((ix+1)*10)*ny + (iy*10)].value + data[(ix-1)*10*ny + (iy*10)].value + data[(ix*10)*ny + (iy+1)*10].value + data[(ix*10)*ny + 10*(iy-1)].value)/4.0;
 	  data[(ix*10)*ny+(iy*10)].pivot=true;
 	}
+
     }
   }
 
 }
+
 
 void relaxation_step(data_t & data, int nx, int ny)
 {
@@ -306,28 +313,6 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 	    }
 	  N[ii].setV(Vnew);
 	  N[ii].setR(Rnew);
-	  /*
-	  auxx=int((Rnew[0]-DELTA)/DELTA);
-          auxy=int((Rnew[1]-DELTA)/DELTA);
-	  d_auxx=(Rnew[0]-DELTA)-auxx*DELTA;
-	  d_auxy=(Rnew[1]-DELTA)-auxy*DELTA;
-	  if(Rnew[0]-DELTA<0)
-	    {
-	      auxx=-int(-(Rnew[0]-DELTA)/DELTA);
-	      auxx=(nx-2)-((-auxx)%(nx-2));
-	    }
-          if(Rnew[1]-DELTA<0)
-	    {
-	      auxx=-int(-(Rnew[1]-DELTA)/DELTA);
-	      auxy=(ny-2)-((-auxy)%(ny-2));
-	    }
-          auxx=(auxx)%(nx-2);
-	  auxy=(auxy)%(ny-2);
-	  Rnew[0]=(auxx+1)*DELTA+d_auxx;
-	  Rnew[1]=(auxy+1)*DELTA+d_auxy;
-	  N[ii].setV(Vnew);
-	  N[ii].setR(Rnew);
-	  */
 	}
     }
 }
