@@ -198,7 +198,7 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
   
   for(int ii=0;ii<Nmax;ii++)
     {
-      if(N[ii].getoc()==true)
+      if(N[ii].getoc()==true)// This if evaluates if the particle is part of the electrode.
 	{
 	  N[ii].resetForce();
 	}
@@ -209,15 +209,14 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 	N[ii].resetForce();
 	auxx=int(aux[0]/DELTA);
 	auxy=int(aux[1]/DELTA);
-	if(1<=auxx && auxx<nx-1 && 1<=auxy && auxy<ny-1)
+	if(1<=auxx && auxx<nx-1 && 1<=auxy && auxy<ny-1) //Condition that evaluates if the particle is inside the frontiers
 	  {
-	    
 	    for(int jj = 0; jj<ii; jj++)
 	      {
 		
-		if(N[jj].getoc()==false){
+		if(N[jj].getoc()==false){ // 
 		  aux2=N[jj].getR();
-		  dr=aux2-aux1;
+		  dr=aux2-aux;
 		  q2=N[jj].getQ();
 		  d_aux=norm(dr);
 		  if(d_aux<2*N[ii].getrad())d_aux=2*N[ii].getrad();
@@ -306,28 +305,6 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 	    }
 	  N[ii].setV(Vnew);
 	  N[ii].setR(Rnew);
-	  /*
-	  auxx=int((Rnew[0]-DELTA)/DELTA);
-          auxy=int((Rnew[1]-DELTA)/DELTA);
-	  d_auxx=(Rnew[0]-DELTA)-auxx*DELTA;
-	  d_auxy=(Rnew[1]-DELTA)-auxy*DELTA;
-	  if(Rnew[0]-DELTA<0)
-	    {
-	      auxx=-int(-(Rnew[0]-DELTA)/DELTA);
-	      auxx=(nx-2)-((-auxx)%(nx-2));
-	    }
-          if(Rnew[1]-DELTA<0)
-	    {
-	      auxx=-int(-(Rnew[1]-DELTA)/DELTA);
-	      auxy=(ny-2)-((-auxy)%(ny-2));
-	    }
-          auxx=(auxx)%(nx-2);
-	  auxy=(auxy)%(ny-2);
-	  Rnew[0]=(auxx+1)*DELTA+d_auxx;
-	  Rnew[1]=(auxy+1)*DELTA+d_auxy;
-	  N[ii].setV(Vnew);
-	  N[ii].setR(Rnew);
-	  */
 	}
     }
 }

@@ -16,7 +16,7 @@ private:
     double q, radii;
 
     bool oc;
-        
+  // The bool oc indicates if the particle is part or not of the electrodes: False or True
 public:
   void init(double x, double y, double z, double vx, double vy, double vz, double mass = 1.0, double charge = 1.0, bool ocup = false, double radio=0.001);
     void printState(double t, std::ofstream &File);

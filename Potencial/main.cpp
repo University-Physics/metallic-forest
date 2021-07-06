@@ -12,13 +12,13 @@ int main(int argc, char **argv)
 {
     Body Molecule[N];
     CRandom rand(42);
-    double mu = 0, sigma = 0.001, sigma1 = 0.001*std::atoi(argv[1]);
+    double mu = 0, sigma = 0.001, sigma1 = 0.001*std::atoi(argv[1]); // The first argument by console is the seed.
     double move_x, move_y;
     Vector3D move;
     double tdibujo = 0;
     double dt=0.01;
-    double V=0.1*std::atoi(argv[2]);
-    double radio=0.01*std::atoi(argv[3]);
+    double V=0.1*std::atoi(argv[2]);  //The second is 10 times V where V is the voltage.
+    double radio=0.01*std::atoi(argv[3]); //the third is 100 times the radio of the particles.
 
     double x, y, z, vx, vy, vz, q0, x0 = 0.25, y0 = 0.25;
 
@@ -40,7 +40,7 @@ int main(int argc, char **argv)
         vz = 0;
 
 	q0=-0.01;
-	if(i%std::atoi(argv[4])==0) q0*=-1;
+	if(i%std::atoi(argv[4])==0) q0*=-1; // ratio of population between charges +q0 and -q0: (Number of q0)/(Number of -q0)= (argv[4]-1) if argv[4]|N
 
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false, radio);
 	//Molecule[i].print();
