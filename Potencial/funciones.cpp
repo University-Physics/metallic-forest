@@ -75,21 +75,27 @@ void evolve(data_t & data, int nx, int ny, int nsteps, int ns_est)
 {
   //start_gnuplot();
     for(int istep = 0; istep < nsteps; ++istep) {
+      //Perform usual relaxation on the big lattice
       relaxation_step(data, nx, ny);
       //print_screen(data, nx, ny);
       //print_gnuplot(data, nx, ny);
     }
     for(int istep = 0; istep < nsteps; ++istep) {
+      //does relaxation on the lattice with less sites
       relaxation_step_pivot(data, nx, ny);
       //print_screen(data, nx, ny);
       //print_gnuplot(data, nx, ny);
     }
     for(int istep = 0; istep < 3*ns_est; ++istep){
+      //Does relaxation over the big lattice considering the points in the
+      //smaller lattice as fixed, thus the value of nearst neighbors gets
+      //corrected by the last relaxation rutine
       stabilization_step(data, nx, ny);
       //print_screen(data, nx, ny);
       //print_gnuplot(data, nx, ny);
     }
     for(int istep = 0; istep < 3*nsteps; ++istep) {
+      //Perform relaxation over the big lattice to ensure convergence
       relaxation_step(data, nx, ny);
       //print_screen(data, nx, ny);
       //print_gnuplot(data, nx, ny);
