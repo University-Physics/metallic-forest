@@ -99,7 +99,7 @@ def read_imbalance(T, V, R):
     outfile="Results_imbalance"+str(int(T))+"T"+str(int(V))+"V"+str(int(R))+"R.txt"
     for j in range(10):
         for i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-            filename="Out"+str(int(T))+"T"+str(int(V))+"V"+str(int(R))+"R"+str(int(i))+"I"+str(int(j+1))+"S.txt"
+            filename="data/Out"+str(int(T))+"T"+str(int(V))+"V"+str(int(R))+"R"+str(int(i))+"I"+str(int(j+1))+"S.txt"
             data[0,0]=i
             data[0,1]=fractal_dimension(opening(filename), max_box_size = None, min_box_size = 1, n_samples = 100, n_offsets = 0, plot = False)
             with open(outfile, "a") as text_file:
@@ -111,7 +111,7 @@ def read_temperature(V, R, I):
     outfile="Results_temperature"+str(int(V))+"V"+str(int(R))+"R"+str(int(I))+"I.txt"
     for j in range(10):
         for i in [1, 2, 5, 7, 10, 15, 20, 30, 40, 50, 70, 100]:
-            filename="Out"+str(int(i))+"T"+str(int(V))+"V"+str(int(R))+"R"+str(int(I))+"I"+str(int(j+1))+"S.txt"
+            filename="data/Out"+str(int(i))+"T"+str(int(V))+"V"+str(int(R))+"R"+str(int(I))+"I"+str(int(j+1))+"S.txt"
             data[0,0]=i
             data[0,1]=fractal_dimension(opening(filename), max_box_size = None, min_box_size = 1, n_samples = 100, n_offsets = 0, plot = False)
             with open(outfile, "a") as text_file:
@@ -123,7 +123,7 @@ def read_radii(T, V, I):
     outfile="Results_radii"+str(int(T))+"T"+str(int(V))+"V"+str(int(I))+"I.txt"
     for j in range(10):
         for i in [1, 2, 3, 4, 5]:
-            filename="Out"+str(int(T))+"T"+str(int(V))+"V"+str(int(i))+"R"+str(int(I))+"I"+str(int(j+1))+"S.txt"
+            filename="data/Out"+str(int(T))+"T"+str(int(V))+"V"+str(int(i))+"R"+str(int(I))+"I"+str(int(j+1))+"S.txt"
             data[0,0]=i
             data[0,1]=fractal_dimension(opening(filename), max_box_size = None, min_box_size = 1, n_samples = 100, n_offsets = 0, plot = False)
             with open(outfile, "a") as text_file:
@@ -135,7 +135,7 @@ def read_potential(T, R, I):
     outfile="Results_potential"+str(int(T))+"T"+str(int(R))+"R"+str(int(I))+"I.txt"
     for j in range(10):
         for i in [1, 2, 5, 7, 10, 15, 20, 30, 40, 50, 70, 100, 200, 250, 300, 350, 400, 500, 600, 700]:
-            filename="Out"+str(int(T))+"T"+str(int(i))+"V"+str(int(R))+"R"+str(int(I))+"I"+str(int(j+1))+"S.txt"
+            filename="data/Out"+str(int(T))+"T"+str(int(i))+"V"+str(int(R))+"R"+str(int(I))+"I"+str(int(j+1))+"S.txt"
             data[0,0]=i
             data[0,1]=fractal_dimension(opening(filename), max_box_size = None, min_box_size = 1, n_samples = 100, n_offsets = 0, plot = False)
             with open(outfile, "a") as text_file:
