@@ -29,7 +29,6 @@ void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int 
     Vector3D aux, aux1;
     // first row
     ix = 0;
-<<<<<<< HEAD
     for(int iy = 0; iy < ny; ++iy) {       //     #----
       data[ix*ny + iy].value = -V_diff/2;  //     #----
       data[ix*ny + iy].electrode = true;   //     #----
@@ -46,7 +45,6 @@ void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int 
     // first row
     
     iy = 0;
-<<<<<<< HEAD
     for(int ix = 1; ix < nx; ++ix) {       //    #####
       data[ix*ny + iy].value = V_diff/2;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
@@ -54,7 +52,6 @@ void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int 
     }
     // last row                             
     iy = ny-1;
-<<<<<<< HEAD
     for(int ix = 1; ix < nx; ++ix) {       //    -----
       data[ix*ny + iy].value = V_diff/2;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
@@ -96,7 +93,6 @@ void evolve(data_t & data, int nx, int ny, int nsteps, int ns_est)
       relaxation_step(data, nx, ny);
       //print_screen(data, nx, ny);
       //print_gnuplot(data, nx, ny);
-<<<<<<< HEAD
     }
 }
 
@@ -301,14 +297,15 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 	  Rnew=N[ii].getR();
 	  Vnew=N[ii].getV();
 	  DR=Rnew-Rold;
-	  if(Rnew[0]>1 || Rnew[0]<0)
-	    {
-	      Rnew[0]=Rold[0]-DR[0];
+	  if(Rnew[0]>1 || Rnew[0]<0) 
+	    {//Rnew=Rnew-DR
+	      Rnew[0]=Rnew[0]-DR[0];
 	      Vnew[0]*=-1;
 	    }
 	  if(Rnew[1]>1 || Rnew[1]<0)
 	    {
-	      Rnew[1]=Rold[1]-DR[1];
+	      
+	      Rnew[1]=Rnew[1]-DR[1];
 	      Vnew[1]*=-1;
 	    }
 	  N[ii].setV(Vnew);
