@@ -13,13 +13,13 @@ public:
 };
 typedef std::vector<potencial> data_t;
 typedef std::vector<double> data_q;
-
+void print(data_q probability,std::string filename);
 void initial_conditions(data_t & data, int nx, int ny);
 void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff);
-void evolve(data_t & data, int nx, int ny, int nsteps, int ns_est);
+bool evolve(data_t & data, int nx, int ny, int nsteps, int ns_est);
 void relaxation_step_pivot(data_t & data, int nx, int ny);
 void stabilization_step(data_t & data, int nx, int ny);
-void relaxation_step(data_t & data, int nx, int ny);
+bool relaxation_step(data_t & data, int nx, int ny);
 void print_screen(const data_t & data, int nx, int ny);
 void start_gnuplot(void);
 void print_gnuplot(const data_t & data, int nx, int ny);

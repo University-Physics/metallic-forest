@@ -1,5 +1,5 @@
 #ifndef Vector3D
-#include "encabezado.h" 
+#include "encabezado.h"
 #endif
 
 /*
@@ -46,14 +46,14 @@ void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int 
     
     iy = 0;
     for(int ix = 1; ix < nx; ++ix) {       //    #####
-      data[ix*ny + iy].value = V_diff/2;   //    -----
+      data[ix*ny + iy].value = 0;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    -----
     }
     // last row                             
     iy = ny-1;
     for(int ix = 1; ix < nx; ++ix) {       //    -----
-      data[ix*ny + iy].value = V_diff/2;   //    -----
+      data[ix*ny + iy].value =0;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    #####
     }
@@ -70,13 +70,31 @@ void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int 
 	}
     }
 }
+double Probability_distribution(Body * molecule, int N)
+{
+  double count=0;
+  for(int i=0;i<N ;i++)
+    {
+      if(molecule[i].getoc()==true)
+	{
+	  count+=1;
+	}
+    }
+  return count;
+}
 
-void evolve(data_t & data, int nx, int ny, int nsteps, int ns_est)
+bool evolve(data_t & data, int nx, int ny, int nsteps, int ns_est)
 {
   //start_gnuplot();
+  bool seguir=true;
     for(int istep = 0; istep < nsteps; ++istep) {
       //Perform usual relaxation on the big lattice
-      relaxation_step(data, nx, ny);
+     seguir=relaxation_step(data, nx, ny);
+     if(seguir==false)
+       {
+	 return false;
+       }
+     
       //print_screen(data, nx, ny);
       //print_gnuplot(data, nx, ny);
     }
@@ -96,10 +114,15 @@ void evolve(data_t & data, int nx, int ny, int nsteps, int ns_est)
     }
     for(int istep = 0; istep < 3*nsteps; ++istep) {
       //Perform relaxation over the big lattice to ensure convergence
-      relaxation_step(data, nx, ny);
+      seguir=relaxation_step(data, nx, ny);
+      if(seguir==false)
+	{
+	  return false;
+	}
       //print_screen(data, nx, ny);
       //print_gnuplot(data, nx, ny);
     }
+    return seguir;
 }
 
 void stabilization_step(data_t & data, int nx, int ny)
@@ -133,20 +156,29 @@ void stabilization_step(data_t & data, int nx, int ny)
 }
 
 
-void relaxation_step(data_t & data, int nx, int ny)
+bool relaxation_step(data_t & data, int nx, int ny)
 {
     // recorrer toda la matriz y aplicar el algoritmo,
     // teniendo cuidado con no modificar las condiciones de
     // frontera
-    for(int ix = 1; ix < nx-1; ++ix) {
-        for(int iy = 1; iy < ny-1; ++iy) {
+  bool seguir=false;
+  data_t aux=data;
+    for(int ix = 1; ix < nx-1; ++ix)
+      {
+        for(int iy = 1; iy < ny-1; ++iy)
+	  {
 	  if(data[ix*ny + iy].ocupation==false)
 	    {
-            data[ix*ny + iy].value = (data[(ix+1)*ny + iy].value + data[(ix-1)*ny + iy].value + data[ix*ny + iy+1].value + data[ix*ny + iy-1].value)/4.0;
+	      double next_value=(aux[(ix+1)*ny + iy].value + aux[(ix-1)*ny + iy].value + aux[ix*ny + iy+1].value + aux[ix*ny + iy-1].value)/4.0;
+	      if(std::fabs(data[ix*ny + iy].value-next_value)>std::fabs(next_value)*0.001)//(v(x,y,t)-v(x,y,t+dt))<0.01*v(x,y,t)
+		{ 
+		  seguir=true;
+		  data[ix*ny + iy].value = next_value;
+		}
 	    }
-        }
+         }
     }
-
+    return seguir;
 }
 
 
@@ -172,6 +204,8 @@ void start_gnuplot(void)
 
 void print_gnuplot(const data_t & data, int nx, int ny)
 {
+  std::cout << "set term pdfcairo\n";
+  std::cout << "set output 'f'\n";
     std::cout << "splot '-' w l lt 3 \n";
     for(int ix = 0; ix < nx; ++ix) {
         double x = XMIN + ix*DELTA;
@@ -182,6 +216,7 @@ void print_gnuplot(const data_t & data, int nx, int ny)
         std::cout << "\n";
     }
     std::cout << "e\n";
+    
 }
 
 void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax)
@@ -266,6 +301,8 @@ bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data)
       qaux=N[ii].getQ();
       auxx=int(aux[0]/DELTA);
       auxy=int(aux[1]/DELTA);
+      if(N[ii].getoc()==false)
+       {
       if( qaux>0 && 1<=auxx && auxx<nx-1 && 1<=auxy && auxy<ny-1)
 	{
 	  if(data[(auxx+1)*ny+auxy].ocupation == true ||data[(auxx-1)*ny+auxy].ocupation == true || data[auxx*ny+(auxy+1)].ocupation == true ||  data[auxx*ny+(auxy-1)].ocupation == true)
@@ -274,10 +311,11 @@ bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data)
 	      Vaux[0]=0;
 	      Vaux[1]=0;
 	      N[ii].setV(Vaux);
-	      N[ii].setoc(true);
+	      N[ii].setoc(true);   
 	    }
 	}
-    }
+       }
+       }
 
   return cond;
 }
@@ -329,7 +367,11 @@ void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, 
   //Obtain potential using fast algorithm
   if(cond==true)
     {
-      evolve_opt(data, nx, ny, l, Nmax, N, V_diff);
+      boundary_conditions(data, nx, ny, N ,l, Nmax, V_diff);
+      while(relaxation_step(data,nx,ny)==true)
+	{
+	  
+	}
     }
 }
 
@@ -344,8 +386,7 @@ void PEFRL(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double m
 
 void print_fractal (int nx, int ny, data_t & data, std::string filename)
 {
-  std::ofstream myfile;
-  myfile.open (filename);
+  std::ofstream myfile(filename);
   for(int ix = 0; ix < nx; ++ix) {
         for(int iy = 0; iy < ny; ++iy) {
 	  myfile<< ix << "  "<<iy<<"   "<< data[ix*ny + iy].ocupation << "\n";
@@ -355,7 +396,18 @@ void print_fractal (int nx, int ny, data_t & data, std::string filename)
     myfile << "\n";
     myfile.close();
 }
-
+void print(data_q probability,std::string filename)
+{
+  int a=probability.size();
+  std::ofstream myfile(filename);
+  for(int ii=0;ii<a;ii++)
+    {
+      myfile<<ii<<"\t"<<probability[ii]<<"\n";
+    }
+  myfile<<"\n";
+  myfile.close();
+  
+}
 void print_potential_size (int nx, int ny, data_t & data, std::string filename, int t)
 {
   std::ofstream myfile;
@@ -389,4 +441,20 @@ void evolve_opt(data_t & data, int nx, int ny, double l, int Nmax, Body * N, dou
   boundary_conditions(data, nx, ny, N ,l, Nmax, V_diff);
   // evolve
   evolve(data, nx, ny, NSTEPS/10, NSTEPS/10);
+}
+bool check_fractal(Body * molecule,int nx, int Nmax)
+{
+  bool prueba=false;
+    for(int i=0;i<Nmax;i++)
+    {
+      int percent=int((nx-1)*(0.9));
+      double x=molecule[i].getR()[0]/DELTA;
+      bool verdad= molecule[i].getoc();
+      if(int(x)>=percent && verdad==true)
+	{
+	  prueba=true;
+	}
+    }
+  return prueba;
+
 }
