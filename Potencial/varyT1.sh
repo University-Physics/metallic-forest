@@ -5,5 +5,6 @@ for T in ${arg[*]}; do
 	echo $I
 	echo $S
 	./main.x $T 1 1 2 $S
+	mv "./data/Out"$T"T1V1R2I"$S"S.txt" "./data/T1/Out"$T"T1V1R2I"$S"S.txt"
     done
 done
