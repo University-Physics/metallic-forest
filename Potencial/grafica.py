@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import re
-archivo=open("Out2.txt")
+archivo=open("./data/Out1T1V1R1I1S.txt")
 A=archivo.read().split("\n")
 X=[]
 Y=[]
@@ -20,4 +20,4 @@ plt.scatter(X, Y, s=area, c=Z, alpha=0.5)
 plt.title("DLA")
 plt.xlabel('x')
 plt.ylabel('y')
-plt.savefig("fractal1.png")
+plt.savefig("fractal1.pdf")

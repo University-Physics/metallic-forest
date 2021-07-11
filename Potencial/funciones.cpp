@@ -70,6 +70,164 @@ void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int 
 	}
     }
 }
+void boundary_conditions1(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
+{
+  //We have to note that three sides are part of the anode and only one of the cathode
+  
+    int ix, iy;
+    Vector3D aux, aux1;
+    // first row
+    ix = 0;
+    for(int iy = 0; iy < ny; ++iy) {       //     #----
+      data[ix*ny + iy].value = -V_diff/2;  //     #----
+      data[ix*ny + iy].electrode = true;   //     #----
+      data[ix*ny + iy].ocupation = true;   //     #----
+    }
+    // last row
+    ix = nx-1;
+    for(int iy = 0; iy < ny; ++iy) {       //     ----#
+      data[ix*ny + iy].value = V_diff/2;   //     ----#
+      data[ix*ny + iy].electrode = true;   //     ----#
+      data[ix*ny + iy].ocupation = false;  //     ----#
+
+    }
+    // first row
+    
+    iy = 0;
+    for(int ix = 1; ix < nx; ++ix) {       //    #####
+      data[ix*ny + iy].value = V_diff/2;   //    -----
+      data[ix*ny + iy].electrode = true;   //    -----
+      data[ix*ny + iy].ocupation = false;  //    -----
+    }
+    // last row                             
+    iy = ny-1;
+    for(int ix = 1; ix < nx; ++ix) {       //    -----
+      data[ix*ny + iy].value =V_diff/2;   //    -----
+      data[ix*ny + iy].electrode = true;   //    -----
+      data[ix*ny + iy].ocupation = false;  //    #####
+    }
+
+    for(int ii=0;ii<Nmax;ii++) // This for is concerning for all the particles, it evaluates if a particle have collided with the anode and now it's part of it.
+    {
+      aux=N[ii].getR();
+      if(N[ii].getoc()==true && data[int(nx*aux[0]/l)*ny + int(ny*aux[1]/l)].electrode == false) // Collision condition
+	{
+	  // Set the electrode conditions in the box where the particle remains
+	  
+	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=-V_diff/2; 
+	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;  
+	}
+    }
+}
+
+void boundary_conditions2(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
+{
+  //We have to note that three sides are part of the anode and only one of the cathode
+  
+    int ix, iy;
+    Vector3D aux, aux1;
+    // first row
+    ix = 0;
+    for(int iy = 0; iy < ny; ++iy) {       //     #----
+      data[ix*ny + iy].value = -V_diff/2;  //     #----
+      data[ix*ny + iy].electrode = true;   //     #----
+      data[ix*ny + iy].ocupation = true;   //     #----
+    }
+    // last row
+    ix = nx-1;
+    for(int iy = 0; iy < ny; ++iy) {       //     ----#
+      data[ix*ny + iy].value = -V_diff/2;   //     ----#
+      data[ix*ny + iy].electrode = true;   //     ----#
+      data[ix*ny + iy].ocupation = true;  //     ----#
+
+    }
+    // first row
+    
+    iy = 0;
+    for(int ix = 1; ix < nx; ++ix) {       //    #####
+      data[ix*ny + iy].value = -V_diff/2;   //    -----
+      data[ix*ny + iy].electrode = true;   //    -----
+      data[ix*ny + iy].ocupation = true;  //    -----
+    }
+    // last row                             
+    iy = ny-1;
+    for(int ix = 1; ix < nx; ++ix) {       //    -----
+      data[ix*ny + iy].value =-V_diff/2;   //    -----
+      data[ix*ny + iy].electrode = true;   //    -----
+      data[ix*ny + iy].ocupation = true;  //    #####
+    }
+    data[(nx-1)/2*ny+ny/2].value=V_diff/2;
+    data[(nx-1)/2*ny+ny/2].electrode=true;
+    data[(nx-1)/2*ny+ny/2].ocupation=false;
+    
+    for(int ii=0;ii<Nmax;ii++) // This for is concerning for all the particles, it evaluates if a particle have collided with the anode and now it's part of it.
+    {
+      aux=N[ii].getR();
+      if(N[ii].getoc()==true && data[int(nx*aux[0]/l)*ny + int(ny*aux[1]/l)].electrode == false) // Collision condition
+	{
+	  // Set the electrode conditions in the box where the particle remains
+	  
+	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=-V_diff/2; 
+	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;  
+	}
+    }
+}
+
+
+
+void boundary_conditions3(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
+{
+  //We have to note that three sides are part of the anode and only one of the cathode
+  
+    int ix, iy;
+    Vector3D aux, aux1;
+    // first row
+    ix = 0;
+    for(int iy = 0; iy < ny; ++iy) {       //     #----
+      data[ix*ny + iy].value = V_diff/2;  //     #----
+      data[ix*ny + iy].electrode = true;   //     #----
+      data[ix*ny + iy].ocupation = false;   //     #----
+    }
+    // last row
+    ix = nx-1;
+    for(int iy = 0; iy < ny; ++iy) {       //     ----#
+      data[ix*ny + iy].value = V_diff/2;   //     ----#
+      data[ix*ny + iy].electrode = true;   //     ----#
+      data[ix*ny + iy].ocupation = false;  //     ----#
+
+    }
+    // first row
+    
+    iy = 0;
+    for(int ix = 1; ix < nx; ++ix) {       //    #####
+      data[ix*ny + iy].value = V_diff/2;   //    -----
+      data[ix*ny + iy].electrode = true;   //    -----
+      data[ix*ny + iy].ocupation = false;  //    -----
+    }
+    // last row                             
+    iy = ny-1;
+    for(int ix = 1; ix < nx; ++ix) {       //    -----
+      data[ix*ny + iy].value =V_diff/2;   //    -----
+      data[ix*ny + iy].electrode = true;   //    -----
+      data[ix*ny + iy].ocupation = false;  //    #####
+    }
+    data[(nx-1)/2*ny+ny/2].value=-V_diff/2;
+    data[(nx-1)/2*ny+ny/2].electrode=true;
+    data[(nx-1)/2*ny+ny/2].ocupation=true;
+    
+    for(int ii=0;ii<Nmax;ii++) // This for is concerning for all the particles, it evaluates if a particle have collided with the anode and now it's part of it.
+    {
+      aux=N[ii].getR();
+      if(N[ii].getoc()==true && data[int(nx*aux[0]/l)*ny + int(ny*aux[1]/l)].electrode == false) // Collision condition
+	{
+	  // Set the electrode conditions in the box where the particle remains
+	  
+	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=-V_diff/2; 
+	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;  
+	}
+    }
+}
+
 double Probability_distribution(Body * molecule, int N)
 {
   double count=0;
@@ -238,7 +396,6 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
   Vector3D aux, aux1, aux2, Faux, dr;
   double q1, q2, d_aux, r_aux;
   int auxx, auxy;
-  bool auxoc;
   
   for(int ii=0;ii<Nmax;ii++)
     {
@@ -322,8 +479,7 @@ bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data)
 void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, double mu, double sigma, double dt, double coefx, double coefv, int seed)
 {
   Vector3D Rnew, Vnew, move, DR, Rold, Vold;
-  double move_x, move_y, d_auxx, d_auxy;
-  int auxx, auxy;
+  double move_x, move_y;
   CRandom rand(seed);
   Get_EF(N, nx, ny, Nmax, data, DELTA, 1);
   for(int ii=0;ii<Nmax;ii++)
@@ -456,5 +612,4 @@ bool check_fractal(Body * molecule,int nx, int Nmax)
 	}
     }
   return prueba;
-
 }
