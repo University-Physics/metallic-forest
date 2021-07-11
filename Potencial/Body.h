@@ -127,6 +127,7 @@ Vector3D rMin(Body b1, Body b2)
     double x, y, z;
     x = dr.x() - Lx * std::round(dr.x() / Lx);
     y = dr.y() - Ly * std::round(dr.y() / Ly);
+    z=0;
     Vector3D rmin(x, y, z);
     return rmin;
 }
