@@ -11,11 +11,11 @@ def opening(textname):
     data=np.zeros(shape=(201, 201))
     for line in A:
 
-        C=re.findall("[0-9]*",line)
+        C=re.findall("[0-9]+",line)
         if len(C) > 1:
             X.append(int(C[0]))
-            Y.append(int(C[3]))
-            Z.append(int(C[7]))
+            Y.append(int(C[1]))
+            Z.append(int(C[2]))
             data[X[-1], Y[-1]]=Z[-1]
     return data
 
@@ -206,8 +206,8 @@ def plot_potential(filename, l, rep, outfile, labelphrase):
     plt.savefig(outfile)
     return
 
-read_imbalance(1, 1, 1)
-plot_imbalance("Results_imbalance1T1V1R.txt", 10, 10, "I1.png", "kT=0.001, R/L=0.01, V=0.1")
+#read_imbalance(1, 1, 1)
+#plot_imbalance("Results_imbalance1T1V1R.txt", 10, 10, "I1.png", "kT=0.001, R/L=0.01, V=0.1")
 read_imbalance(100, 1, 1)
 plot_imbalance("Results_imbalance100T1V1R.txt", 10, 10, "I2.png", "kT=0.1, R/L=0.01, V=0.1")
 read_imbalance(1, 100, 1)

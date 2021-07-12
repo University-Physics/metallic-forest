@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import re
-archivo=open("./data/Out1T1V1R1I1S.txt")
+l=input("Escribe...")
+archivo=open(l)
 A=archivo.read().split("\n")
 X=[]
 Y=[]
