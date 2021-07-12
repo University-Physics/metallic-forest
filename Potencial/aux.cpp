@@ -44,30 +44,37 @@ int main(int argc, char **argv)
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false, radio);
       }
     //Calculate initial potential
-    initial_conditions(potential, NX, NY);
-    if(std::atoi(argv[6])==0){boundary_conditions(potential, NX, NY, Molecule, Lx, N, V);}
-    if(std::atoi(argv[6])==1){boundary_conditions1(potential, NX, NY, Molecule, Lx, N, V);}
-    if(std::atoi(argv[6])==2){boundary_conditions2(potential, NX, NY, Molecule, Lx, N, V);}
-    if(std::atoi(argv[6])==3){boundary_conditions3(potential, NX, NY, Molecule, Lx, N, V);}
-    bool a=true;
-    int count=0;
-    while(a==true) { a=relaxation_step(potential,NX,NY); count+=1; }
-    data_q distribution;
-    print_gnuplot(potential, NX, NY);
-    for (int t = 0; t < 5000; t++)
-    {
-      PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,std::atoi(argv[6]));	
-      /* if(check_fractal(Molecule,NX,N)==true)
-	{
-	  distribution.push_back(Probability_distribution(Molecule,N));
-	  break;
-	}
-      */
-      distribution.push_back(Probability_distribution(Molecule,N));
-    }
-    print(distribution,std::to_string(std::atoi(argv[6]))+"Probability_distribution.txt");
-    std::string filename="data/"+std::to_string(std::atoi(argv[6]))+"condition"+std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S.txt";
-    print_fractal(NX,NY, potential, filename);
+    std::vector<std::vector<double>> distribution(4);
+    for(int semilla=0;semilla<5;semilla++)
+      {
+	initial_conditions(potential, NX, NY);
+	if(std::atoi(argv[6])==0){boundary_conditions(potential, NX, NY, Molecule, Lx, N, V);}
+	if(std::atoi(argv[6])==1){boundary_conditions1(potential, NX, NY, Molecule, Lx, N, V);}
+	if(std::atoi(argv[6])==2){boundary_conditions2(potential, NX, NY, Molecule, Lx, N, V);}
+	if(std::atoi(argv[6])==3){boundary_conditions3(potential, NX, NY, Molecule, Lx, N, V);}
+	bool a=true;
+	int count=0;
+	while(a==true) { a=relaxation_step(potential,NX,NY); count+=1; }
+	print_gnuplot(potential, NX, NY);
+	for (int t = 0; t < 5000; t++)
+	  {
+	    PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+semilla, V);	
+	    distribution[semilla].push_back(Probability_distribution(Molecule,N));
+	  }
+	std::string filename="data/"+std::to_string(std::atoi(argv[6]))+"condition"+std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(semilla)+"S.txt";
+	print_fractal(NX,NY, potential, filename);
+      }
+    data_q average(5000);
+    for(int i=0;i<5000;i++)
+      {
+	
+	for(int j=0;j<5;j++)
+	  {
+	    average[i]+=distribution[j][i]/4;
+	  }
+	
+      }
+      print(average,std::to_string(std::atoi(argv[6]))+"Probability_distribution.txt");
 
 return 0;
 }
