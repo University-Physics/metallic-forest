@@ -362,9 +362,15 @@ void start_gnuplot(void)
 
 void print_gnuplot(const data_t & data, int nx, int ny)
 {
-  std::cout << "set term pdfcairo\n";
-  std::cout << "set output 'f'\n";
-    std::cout << "splot '-' w l lt 3 \n";
+  std::cout<<"set hidden3d\n"<<std::endl;
+  std::cout<<"set isosamples 50"<<std::endl;
+  std::cout<<"set pm3d at s\n"<<std::endl;
+  std::cout<<"set contour\n"<<std::endl;
+  std::cout<<"unset key"<<std::endl;
+  std::cout<<"set cntrparam levels 10\n"<<std::endl;
+  std::cout << "set term postscript eps enhanced color\n";
+  std::cout << "set output 'color.eps'\n";
+    std::cout << "splot '-' w l\n";
     for(int ix = 0; ix < nx; ++ix) {
         double x = XMIN + ix*DELTA;
         for(int iy = 0; iy < ny; ++iy) {
@@ -514,7 +520,7 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
     }
 }
 
-void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, double coefx, double coefv, int seed, double V_diff)
+void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, double coefx, double coefv, int seed, double V_diff, int frontier)
 {
   bool cond;
   //update positions and boundaries
@@ -523,7 +529,24 @@ void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, 
   //Obtain potential using fast algorithm
   if(cond==true)
     {
+      if(frontier==0)
+	{
       boundary_conditions(data, nx, ny, N ,l, Nmax, V_diff);
+        }
+      else if(frontier==1)
+	{
+      boundary_conditions1(data, nx, ny, N ,l, Nmax, V_diff);
+	}
+      
+      else if (frontier==2)
+	{
+      boundary_conditions2(data, nx, ny, N ,l, Nmax, V_diff);
+	}
+      else
+	{
+      boundary_conditions3(data, nx, ny, N ,l, Nmax, V_diff);
+	}
+	  
       while(relaxation_step(data,nx,ny)==true)
 	{
 	  
@@ -531,13 +554,13 @@ void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, 
     }
 }
 
-void PEFRL(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, int seed, double V_diff)
+void PEFRL(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, int seed, double V_diff, int Frontier)
 {
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, 0.0, seed, V_diff);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, coef1, seed, V_diff);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, coef2, Lambda, seed, V_diff);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, Lambda, seed, V_diff);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, coef1, seed, V_diff);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, 0.0, seed, V_diff,Frontier);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, coef1, seed, V_diff, Frontier);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, coef2, Lambda, seed, V_diff, Frontier);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, Lambda, seed, V_diff, Frontier);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, coef1, seed, V_diff, Frontier);
 }
 
 void print_fractal (int nx, int ny, data_t & data, std::string filename)

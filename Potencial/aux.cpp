@@ -53,10 +53,10 @@ int main(int argc, char **argv)
     int count=0;
     while(a==true) { a=relaxation_step(potential,NX,NY); count+=1; }
     data_q distribution;
-    //print_gnuplot(potential, NX, NY);
+    print_gnuplot(potential, NX, NY);
     for (int t = 0; t < 5000; t++)
     {
-     PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V);	
+      PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,std::atoi(argv[6]));	
       if(check_fractal(Molecule,NX,N)==true)
 	{
 	  distribution.push_back(Probability_distribution(Molecule,N));
@@ -67,6 +67,7 @@ int main(int argc, char **argv)
     print(distribution,std::to_string(std::atoi(argv[6]))+"Probability_distribution.txt");
     std::string filename="data/"+std::to_string(std::atoi(argv[6]))+"condition"+std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S.txt";
     print_fractal(NX,NY, potential, filename);
+
 return 0;
 }
 
