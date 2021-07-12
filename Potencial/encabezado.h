@@ -28,8 +28,9 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data);
 void update_and_check_pos2(Body * N, int nx, int ny, double l, int Nmax, data_t & data, double mu, double sigma, double dt, double coefx, double coefv, int seed);
 void print_fractal (int nx, int ny, data_t & data, std::string filename);
-void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, double coefx, double coefv, int seed, double V_diff, int frontier);
-void PEFRL(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, int seed, double V_diff, int Frontier);
+void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, double coefx, double coefv, int seed, double V_diff);
+void deposited_particles(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff);
+void PEFRL(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, int seed, double V_diff);
 void evolve_opt(data_t & data, int nx, int ny, double l, int Nmax, Body * N, double V_diff);
 void print_potential (int nx, int ny, data_t & data, std::string filename);
 void print_potential_size (int nx, int ny, data_t & data, std::string filename, int t);
