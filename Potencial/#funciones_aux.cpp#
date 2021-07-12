@@ -1,0 +1,16 @@
+#include <string>
+#include <sstream>
+#include <fstream>
+#include <cstdlib>
+ Body Molecule[N];
+    CRandom rand(42);
+    double mu = 0, sigma = 0.001, sigma1 = 0.001*std::atoi(argv[1]); // The first argument by console is the seed.
+    double move_x, move_y;
+    Vector3D move;
+    double tdibujo = 0;
+    double dt=0.01;
+    double V=0.1*std::atoi(argv[2]);  //The second is 10 times V where V is the voltage.
+    double radio=0.01*std::atoi(argv[3]); //the third is 100 times the radio of the particles.
+    double x, y, z, vx, vy, vz, q0, x0 = 0.25, y0 = 0.25;
+    double dx = Lx /(2*(Nx + 1));
+    double dy = Ly /(2*(Ny + 1));

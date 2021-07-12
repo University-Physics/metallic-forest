@@ -26,7 +26,8 @@ V$(v): main.x varyV$(v).sh
 Fractal_imbalance.png: main.x run.sh Fractal_dim.py
 	bash run.sh
 	python3 Fractal_dim.py
-
+aux.x:aux.cpp
+	g++ -O3 -g -Wall $< -o $@
 .PHONY:clean
 clean:
 	rm -f *.x *.o 
