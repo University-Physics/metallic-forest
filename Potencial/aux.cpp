@@ -57,11 +57,12 @@ int main(int argc, char **argv)
     for (int t = 0; t < 5000; t++)
     {
       PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,std::atoi(argv[6]));	
-      if(check_fractal(Molecule,NX,N)==true)
+      /* if(check_fractal(Molecule,NX,N)==true)
 	{
 	  distribution.push_back(Probability_distribution(Molecule,N));
 	  break;
 	}
+      */
       distribution.push_back(Probability_distribution(Molecule,N));
     }
     print(distribution,std::to_string(std::atoi(argv[6]))+"Probability_distribution.txt");
