@@ -21,8 +21,14 @@ int main(int argc, char **argv)
     double dy = Ly /(2*(Ny + 1));
     //Declare potential and density array
     data_t potential(NX*NY);
-    //Usual condition:
-    for (int i=0; i<N;i++)
+    
+    //Calculate initial potential
+    std::vector<std::vector<double>> distribution(5);
+      data_q average(5000);
+    for(int semilla=0;semilla<5;semilla++)
+      {
+	//Usual condition:
+	  for (int i=0; i<N;i++)
       {
         // Initial positions in cubic lattice
 	
@@ -43,10 +49,6 @@ int main(int argc, char **argv)
 	if(i%std::atoi(argv[4])==0) q0*=-1; // ratio of population between charges +q0 and -q0: (Number of q0)/(Number of -q0)= (argv[4]-1) if argv[4]|N
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false, radio);
       }
-    //Calculate initial potential
-    std::vector<std::vector<double>> distribution(4);
-    for(int semilla=0;semilla<5;semilla++)
-      {
 	initial_conditions(potential, NX, NY);
 	if(std::atoi(argv[6])==0){boundary_conditions(potential, NX, NY, Molecule, Lx, N, V);}
 	if(std::atoi(argv[6])==1){boundary_conditions1(potential, NX, NY, Molecule, Lx, N, V);}
@@ -64,15 +66,14 @@ int main(int argc, char **argv)
 	std::string filename="data/"+std::to_string(std::atoi(argv[6]))+"condition"+std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(semilla)+"S.txt";
 	print_fractal(NX,NY, potential, filename);
       }
-    data_q average(5000);
     for(int i=0;i<5000;i++)
       {
 	
 	for(int j=0;j<5;j++)
 	  {
-	    average[i]+=distribution[j][i]/4;
+	    average[i]+=distribution[j][i];
 	  }
-	
+	average[i]/=5;
       }
       print(average,std::to_string(std::atoi(argv[6]))+"Probability_distribution.txt");
 
