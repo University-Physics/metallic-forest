@@ -57,8 +57,12 @@ void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int 
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    #####
     }
+    }
 
-    for(int ii=0;ii<Nmax;ii++) // This for is concerning for all the particles, it evaluates if a particle have collided with the anode and now it's part of it.
+void deposited_particles(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
+{
+  Vector3D aux;
+   for(int ii=0;ii<Nmax;ii++) // This for is concerning for all the particles, it evaluates if a particle have collided with the anode and now it's part of it.
     {
       aux=N[ii].getR();
       if(N[ii].getoc()==true && data[int(nx*aux[0]/l)*ny + int(ny*aux[1]/l)].electrode == false) // Collision condition
@@ -106,18 +110,6 @@ void boundary_conditions1(data_t & data, int nx, int ny, Body * N, double l, int
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    #####
     }
-
-    for(int ii=0;ii<Nmax;ii++) // This for is concerning for all the particles, it evaluates if a particle have collided with the anode and now it's part of it.
-    {
-      aux=N[ii].getR();
-      if(N[ii].getoc()==true && data[int(nx*aux[0]/l)*ny + int(ny*aux[1]/l)].electrode == false) // Collision condition
-	{
-	  // Set the electrode conditions in the box where the particle remains
-	  
-	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=-V_diff/2; 
-	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;  
-	}
-    }
 }
 
 void boundary_conditions2(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
@@ -159,18 +151,6 @@ void boundary_conditions2(data_t & data, int nx, int ny, Body * N, double l, int
     data[(nx-1)/2*ny+ny/2].value=V_diff/2;
     data[(nx-1)/2*ny+ny/2].electrode=true;
     data[(nx-1)/2*ny+ny/2].ocupation=false;
-    
-    for(int ii=0;ii<Nmax;ii++) // This for is concerning for all the particles, it evaluates if a particle have collided with the anode and now it's part of it.
-    {
-      aux=N[ii].getR();
-      if(N[ii].getoc()==true && data[int(nx*aux[0]/l)*ny + int(ny*aux[1]/l)].electrode == false) // Collision condition
-	{
-	  // Set the electrode conditions in the box where the particle remains
-	  
-	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=-V_diff/2; 
-	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;  
-	}
-    }
 }
 
 
@@ -214,18 +194,6 @@ void boundary_conditions3(data_t & data, int nx, int ny, Body * N, double l, int
     data[(nx-1)/2*ny+ny/2].value=-V_diff/2;
     data[(nx-1)/2*ny+ny/2].electrode=true;
     data[(nx-1)/2*ny+ny/2].ocupation=true;
-    
-    for(int ii=0;ii<Nmax;ii++) // This for is concerning for all the particles, it evaluates if a particle have collided with the anode and now it's part of it.
-    {
-      aux=N[ii].getR();
-      if(N[ii].getoc()==true && data[int(nx*aux[0]/l)*ny + int(ny*aux[1]/l)].electrode == false) // Collision condition
-	{
-	  // Set the electrode conditions in the box where the particle remains
-	  
-	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=-V_diff/2; 
-	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;  
-	}
-    }
 }
 
 double Probability_distribution(Body * molecule, int N)
@@ -520,7 +488,7 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
     }
 }
 
-void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, double coefx, double coefv, int seed, double V_diff, int frontier)
+void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, double coefx, double coefv, int seed, double V_diff)
 {
   bool cond;
   //update positions and boundaries
@@ -529,38 +497,20 @@ void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, 
   //Obtain potential using fast algorithm
   if(cond==true)
     {
-      if(frontier==0)
-	{
-      boundary_conditions(data, nx, ny, N ,l, Nmax, V_diff);
-        }
-      else if(frontier==1)
-	{
-      boundary_conditions1(data, nx, ny, N ,l, Nmax, V_diff);
-	}
-      
-      else if (frontier==2)
-	{
-      boundary_conditions2(data, nx, ny, N ,l, Nmax, V_diff);
-	}
-      else
-	{
-      boundary_conditions3(data, nx, ny, N ,l, Nmax, V_diff);
-	}
-	  
+      deposited_particles(data, nx, ny, N ,l, Nmax, V_diff);	  
       while(relaxation_step(data,nx,ny)==true)
 	{
-	  
 	}
     }
 }
 
-void PEFRL(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, int seed, double V_diff, int Frontier)
+void PEFRL(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, int seed, double V_diff)
 {
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, 0.0, seed, V_diff,Frontier);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, coef1, seed, V_diff, Frontier);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, coef2, Lambda, seed, V_diff, Frontier);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, Lambda, seed, V_diff, Frontier);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, coef1, seed, V_diff, Frontier);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, 0.0, seed, V_diff);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, coef1, seed, V_diff);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, coef2, Lambda, seed, V_diff);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, Lambda, seed, V_diff);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, coef1, seed, V_diff);
 }
 
 void print_fractal (int nx, int ny, data_t & data, std::string filename)
