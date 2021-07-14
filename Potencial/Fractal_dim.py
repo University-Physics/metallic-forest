@@ -174,6 +174,8 @@ def read_potential(T, R, I):
 
 def plot_imbalance(filename, l, rep, outfile, labelphrase):
     x,y =read_file(filename)
+    for i in range(len(x)):
+        x[i]=1-2/x[i]
     plt.figure()
     plt.scatter(x,y, color='k', label=labelphrase)
     plt.plot(x,y, color='k')
@@ -188,6 +190,8 @@ def plot_imbalance(filename, l, rep, outfile, labelphrase):
 
 def plot_temperature(filename, l, rep, outfile, labelphrase):
     x,y =read_file(filename)
+    for i in range(len(x)):
+        x[i]=0.001*x[i]
     plt.figure()
     plt.scatter(x, y, color='k', label=labelphrase)
     plt.plot(x, y, color='k')
@@ -203,6 +207,8 @@ def plot_temperature(filename, l, rep, outfile, labelphrase):
 
 def plot_radii(filename, l, rep, outfile, labelphrase):
     x,y =read_file(filename)
+    for i in range(len(x)):
+        x[i]=0.01*x[i]
     plt.figure()
     plt.scatter(x, y, color='k', label=labelphrase)
     plt.plot(x, y, color='k')
@@ -217,6 +223,8 @@ def plot_radii(filename, l, rep, outfile, labelphrase):
 
 def plot_potential(filename, l, rep, outfile, labelphrase):
     x,y =read_file(filename)
+    for i in range(len(x)):
+        x[i]=0.1*x[i]
     plt.figure()
     plt.scatter(x, y, color='k', label=labelphrase)
     plt.plot(x, y, color='k')

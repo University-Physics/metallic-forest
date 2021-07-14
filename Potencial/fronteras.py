@@ -116,6 +116,7 @@ for i in Casos:
         c=opening(i+v+j+"S.txt")
         dimension+=fractal_dimension(c, max_box_size = None, min_box_size = 1, n_samples = 40, n_offsets = 0, plot = False)
     dimension/=4
+    equis.append(dimension)
     print(i,dimension)
 
 
