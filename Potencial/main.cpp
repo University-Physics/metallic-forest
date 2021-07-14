@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     Vector3D move;
     double tdibujo = 0;
     double dt=0.01;
-    double V=0.1*std::atoi(argv[2]);  //The second is 10 times V where V is the voltage.
+    double V=0.1*std::stod(argv[2]);  //The second is 10 times V where V is the voltage.
     double radio=0.01*std::atoi(argv[3]); //the third is 100 times the radio of the particles.
     double x, y, z, vx, vy, vz, q0, x0 = 0.25, y0 = 0.25;
 
@@ -61,7 +61,7 @@ int main(int argc, char **argv)
     //std::string filename="Fract_size"+std::to_string(std::atoi(argv[1]))+".txt";
 
     data_q distribution;
-    for (int t = 0; t < 5000; t++)
+    for (int t = 0; t < 5; t++)
     {
       /* 
       if (t % 200 == 0)
@@ -83,10 +83,12 @@ int main(int argc, char **argv)
 	}
       distribution.push_back(Probability_distribution(Molecule,N));
     }
-    print(distribution,"Probability_distribution.txt");
     std::string filename="data/Out"+std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S.txt";
     print_fractal(NX,NY, potential, filename);
-    print_gnuplot(potential, NX, NY);
+    std::string namedis=std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::stod(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S";
+    print_fractal(NX,NY, potential, filename);
+    print(distribution,namedis+"Probability_distribution.txt");
+    //print_gnuplot(potential, NX, NY);
       
 return 0;
 }
