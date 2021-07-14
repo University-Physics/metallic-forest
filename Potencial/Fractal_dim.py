@@ -191,7 +191,7 @@ def plot_imbalance(filename, l, rep, outfile, labelphrase):
 def plot_temperature(filename, l, rep, outfile, labelphrase):
     x,y =read_file(filename)
     for i in range(len(x)):
-        x[i]=0.001*x[i]
+        x[i]=(0.001*x[i])**2
     plt.figure()
     plt.scatter(x, y, color='k', label=labelphrase)
     plt.plot(x, y, color='k')
@@ -238,28 +238,28 @@ def plot_potential(filename, l, rep, outfile, labelphrase):
     return
 
 read_imbalance(1, 1, 1)
-plot_imbalance("Results_imbalance1T1V1R.txt", 10, 10, "I1", "kT=0.001, R/L=0.01, V=0.1")
+plot_imbalance("Results_imbalance1T1V1R.txt", 10, 10, "I1", "kT="+str((0.001)**2)+", R/L=0.01, V=0.1")
 read_imbalance(100, 1, 1)
-plot_imbalance("Results_imbalance100T1V1R.txt", 10, 10, "I2", "kT=0.1, R/L=0.01, V=0.1")
+plot_imbalance("Results_imbalance100T1V1R.txt", 10, 10, "I2", "kT="+str(0.01)+", R/L=0.01, V=0.1")
 read_imbalance(1, 100, 1)
-plot_imbalance("Results_imbalance1T100V1R.txt", 10, 10, "I3", "kT=0.001, R/L=0.01, V=10.0")
+plot_imbalance("Results_imbalance1T100V1R.txt", 10, 10, "I3", "kT="+str(0.001**2)+", R/L=0.01, V=10.0")
 read_imbalance(100, 100, 1)
-plot_imbalance("Results_imbalance100T100V1R.txt", 10, 10, "I4", "kT=0.1, R/L=0.01, V=10.0")
+plot_imbalance("Results_imbalance100T100V1R.txt", 10, 10, "I4", "kT="+str(0.01)+", R/L=0.01, V=10.0")
 read_radii(1, 1, 2)
-plot_radii("Results_radii1T1V2I.txt", 5, 10, "R1", "kT=0.001, V=0.1, I=0") #5  #10 re
+plot_radii("Results_radii1T1V2I.txt", 5, 10, "R1", "kT="+str(0.001**2)+", V=0.1, I=0") #5  #10 re
 read_radii(100, 1, 2)
-plot_radii("Results_radii100T1V2I.txt", 5, 10, "R2", "kT=0.1, V=0.1, I=0")
+plot_radii("Results_radii100T1V2I.txt", 5, 10, "R2", "kT="+str(0.01)+", V=0.1, I=0")
 read_radii(1, 100, 2)
-plot_radii("Results_radii1T100V2I.txt", 5, 10, "R3", "kT=0.001, V=10.0, I=0")
+plot_radii("Results_radii1T100V2I.txt", 5, 10, "R3", "kT="+str(0.001**2)+", V=10.0, I=0")
 read_radii(100, 100, 2)
-plot_radii("Results_radii100T100V2I.txt", 5, 10, "R4", "kT=0.1, V=10.0, I=0")
+plot_radii("Results_radii100T100V2I.txt", 5, 10, "R4", "kT="+str(0.01)+", V=10.0, I=0")
 read_temperature(1, 1, 2)
 plot_temperature("Results_temperature1V1R2I.txt", 12, 10, "T1", "V=0.1, R/L=0.01, I=0")
 read_temperature(100, 1, 2)
 plot_temperature("Results_temperature100V1R2I.txt", 12, 10, "T2", "V=10.0, R/L=0.01, I=0")
 read_potential(1, 1, 2)
-plot_potential("Results_temperature1V1R2I.txt", 20, 10, "V1", "kT=0.001, R/L=0.01, I=0")
+plot_potential("Results_temperature1V1R2I.txt", 20, 10, "V1", "kT="+str(0.001**2)+", R/L=0.01, I=0")
 read_potential(100, 1, 2)
-plot_potential("Results_temperature1V1R2I.txt", 20, 10, "V2", "kT=0.1, R/L=0.01, I=0")
+plot_potential("Results_temperature1V1R2I.txt", 20, 10, "V2", "kT="+str(0.01)+", R/L=0.01, I=0")
 
 

@@ -26,9 +26,9 @@ for m in range(0,4):
 
     G=re.findall("[0-9]+",l)
     condicion=G[0]
-    T=str(0.001*float(G[1]))
-    V=str(float(G[2])*0.1)
-    R=str(0.01*float(G[3]))
+    T=str((0.001*float(G[0]))**2)
+    V=str(float(G[1])*0.1)
+    R=str(0.01*float(G[2]))
     fig.suptitle("Growth of dendrites"+r" $T="+T+"\;V="+V+"\;R="+R+"\; N_A=N_B"+"$")
     print(G)
 Casos=["0","1","2","3"]
