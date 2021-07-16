@@ -155,7 +155,7 @@ void boundary_conditions2(data_t & data, int nx, int ny, Body * N, double l, int
 
 
 
-void boundary_conditions3(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
+void boundary_conditions4(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
 {
   //We have to note that three sides are part of the anode and only one of the cathode
   
@@ -164,7 +164,7 @@ void boundary_conditions3(data_t & data, int nx, int ny, Body * N, double l, int
     // first row
     ix = 0;
     for(int iy = 0; iy < ny; ++iy) {       //     #----
-      data[ix*ny + iy].value = V_diff/2;  //     #----
+      data[ix*ny + iy].value = -V_diff/2;  //     #----
       data[ix*ny + iy].electrode = true;   //     #----
       data[ix*ny + iy].ocupation = false;   //     #----
     }
@@ -180,22 +180,59 @@ void boundary_conditions3(data_t & data, int nx, int ny, Body * N, double l, int
     
     iy = 0;
     for(int ix = 1; ix < nx; ++ix) {       //    #####
-      data[ix*ny + iy].value = V_diff/2;   //    -----
+      data[ix*ny + iy].value = -V_diff/2*(1-(2.00*ix)/((nx-1)));   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    -----
     }
     // last row                             
     iy = ny-1;
-    for(int ix = 1; ix < nx; ++ix) {       //    -----
-      data[ix*ny + iy].value =V_diff/2;   //    -----
-      data[ix*ny + iy].electrode = true;   //    -----
-      data[ix*ny + iy].ocupation = false;  //    #####
+    for(int ix = 1; ix < nx; ++ix) {                      //    -----
+      data[ix*ny + iy].value =-V_diff/2*(1-(2.00*ix)/((nx-1)));//    -----
+      data[ix*ny + iy].electrode = true;                  //    -----
+      data[ix*ny + iy].ocupation = false;                 //    #####
     }
-    data[(nx-1)/2*ny+ny/2].value=-V_diff/2;
-    data[(nx-1)/2*ny+ny/2].electrode=true;
-    data[(nx-1)/2*ny+ny/2].ocupation=true;
 }
 
+void boundary_conditions3(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
+{
+  //We have to note that three sides are part of the anode and only one of the cathode
+  
+    int ix, iy;
+    Vector3D aux, aux1;
+    // first row
+    ix = 0;
+    for(int iy = 0; iy < ny; ++iy) {       //     #----
+      data[ix*ny + iy].value = -V_diff/2;  //     #----
+      data[ix*ny + iy].electrode = true;   //     #----
+      data[ix*ny + iy].ocupation = true;   //     #----
+    }
+    // last row
+    ix = nx-1;
+    for(int iy = 0; iy < ny; ++iy) {       //     ----#
+      data[ix*ny + iy].value = -V_diff/2;   //     ----#
+      data[ix*ny + iy].electrode = true;   //     ----#
+      data[ix*ny + iy].ocupation = true;  //     ----#
+
+    }
+    // first row
+    
+    iy = 0;
+    for(int ix = 1; ix < nx; ++ix) {       //    #####
+      data[ix*ny + iy].value = -V_diff/2;   //    -----
+      data[ix*ny + iy].electrode = true;   //    -----
+      data[ix*ny + iy].ocupation = true;  //    -----
+    }
+    // last row                             
+    iy = ny-1;
+    for(int ix = 1; ix < nx; ++ix) {       //    -----
+      data[ix*ny + iy].value =-V_diff/2;   //    -----
+      data[ix*ny + iy].electrode = true;   //    -----
+      data[ix*ny + iy].ocupation = true;  //    #####
+    }
+    data[(nx-1)/2*ny+ny/2].value=V_diff/2;
+    data[(nx-1)/2*ny+ny/2].electrode=true;
+    data[(nx-1)/2*ny+ny/2].ocupation=false;
+}
 double Probability_distribution(Body * molecule, int N)
 {
   double count=0;
