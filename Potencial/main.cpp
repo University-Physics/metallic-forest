@@ -39,8 +39,8 @@ int main(int argc, char **argv)
         vz = 0;
 
 	q0=-0.01;
-	if((i+1)<=N*(1+std::stod(argv[4]))/2) q0*=-1;
-	   //if(i%std::atoi(argv[4])==0) q0*=-1; // ratio of population between charges +q0 and -q0: (Number of q0)/(Number of -q0)= (argv[4]-1) if argv[4]|N
+	//if((i+1)<=N*(1+std::stod(argv[4]))/2) q0*=-1;
+	  if(i%std::atoi(argv[4])==0) q0*=-1; // ratio of population between charges +q0 and -q0: (Number of q0)/(Number of -q0)= (argv[4]-1) if argv[4]|N
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false, radio);
 	//Molecule[i].print();
       }
@@ -48,7 +48,8 @@ int main(int argc, char **argv)
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
-    boundary_conditions(potential, NX, NY, Molecule, Lx, N, V);
+    if(std::atoi(argv[6])==4) {boundary_conditions4(potential, NX, NY, Molecule, Lx, N, V);}
+    if(std::atoi(argv[6])==1){boundary_conditions1(potential,Nx,NY,Molecule,Lx,N,V);}
     evolve(potential, NX, NY, NSTEPS, NSTEPS);
     bool a=true;
     int count=0;
@@ -60,7 +61,7 @@ int main(int argc, char **argv)
     //std::string filename="Fract_size"+std::to_string(std::atoi(argv[1]))+".txt";
 
     data_q distribution;
-    for (int t = 0; t < 5; t++)
+    for (int t = 0; t < 1; t++)
     {
       /* 
       if (t % 200 == 0)
@@ -82,9 +83,9 @@ int main(int argc, char **argv)
 	}
       distribution.push_back(Probability_distribution(Molecule,N));
     }
-    std::string filename="data/Out"+std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::stod(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S.txt";
+    std::string filename="data/Out"+std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S.txt";
     print_fractal(NX,NY, potential, filename);
-    std::string namedis=std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::stod(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S";
+    std::string namedis=std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S";
     print_fractal(NX,NY, potential, filename);
     print(distribution,namedis+"Probability_distribution.txt");
     //print_gnuplot(potential, NX, NY);
