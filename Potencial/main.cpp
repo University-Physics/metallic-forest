@@ -61,7 +61,7 @@ int main(int argc, char **argv)
     //std::string filename="Fract_size"+std::to_string(std::atoi(argv[1]))+".txt";
 
     data_q distribution;
-    for (int t = 0; t < 1; t++)
+    for (int t = 0; t < 5000; t++)
     {
       /* 
       if (t % 200 == 0)
