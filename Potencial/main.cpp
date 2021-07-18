@@ -25,6 +25,7 @@ int main(int argc, char **argv)
     double dy = Ly /(2*(Ny + 1));
     //Declare potential and density array
     data_t potential(NX*NY);
+    bool interacciones=false;
 
     for (int i=0; i<N;i++)
       {
@@ -74,7 +75,7 @@ int main(int argc, char **argv)
 	 
         }
       */
-      PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V);	
+      PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,interacciones);	
       if(check_fractal(Molecule,NX,N)==true)
 	{
 	  distribution.push_back(Probability_distribution(Molecule,N));

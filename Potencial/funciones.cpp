@@ -402,12 +402,13 @@ void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax)
     }
 }
 
-void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, double gamma)
+void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, double gamma, bool interacciones)
 {
   Vector3D aux, aux1, aux2, Faux, dr;
   double q1, q2, d_aux, r_aux;
   int auxx, auxy;
-  
+  if(interacciones==true)
+    {
   for(int ii=0;ii<Nmax;ii++)
     {
       if(N[ii].getoc()==true)
@@ -452,6 +453,53 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 	  }
       }
     }
+    }
+  else
+    {
+      
+ for(int ii=0;ii<Nmax;ii++)
+    {
+      if(N[ii].getoc()==true)
+	{
+	  N[ii].resetForce();
+	}
+      else{
+	aux=N[ii].getR();
+	aux1=N[ii].getV();
+	q1=N[ii].getQ();
+	N[ii].resetForce();
+	auxx=int(aux[0]/DELTA);
+	auxy=int(aux[1]/DELTA);
+	if(1<=auxx && auxx<nx-1 && 1<=auxy && auxy<ny-1)
+	  {
+	    
+	    for(int jj = 0; jj<ii; jj++)
+	      {
+		
+		if(N[jj].getoc()==false){
+		  aux2=N[jj].getR();
+		  dr=aux2-aux1;
+		  q2=N[jj].getQ();
+		  d_aux=norm(dr);
+		  if(norm(dr)<N[ii].getrad())
+		    {
+		      r_aux=std::sqrt(1/(1/N[ii].getrad()+1/N[jj].getrad()));
+		      Faux-=4/3*r_aux*std::sqrt(norm(dr))*dr;
+		    }
+		  
+		  N[ii].addForce(Faux);
+		  N[jj].addForce((-1)*Faux);
+		}
+	      }
+	    
+	    Faux[0]=q1*(data[(auxx-1)*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/(2*Delta)-gamma*aux1[0];
+	    Faux[1]=q1*(data[auxx*ny+(auxy-1)].value-data[auxx*ny+(auxy+1)].value)/(2*Delta)-gamma*aux1[1];
+	    N[ii].addForce(Faux);
+	  }
+      }
+    }
+
+    }
 
   return;
 }
@@ -487,12 +535,12 @@ bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data)
 
   return cond;
 }
-void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, double mu, double sigma, double dt, double coefx, double coefv, int seed)
+void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, double mu, double sigma, double dt, double coefx, double coefv, int seed, bool interacciones)
 {
   Vector3D Rnew, Vnew, move, DR, Rold, Vold;
   double move_x, move_y;
   CRandom rand(seed);
-  Get_EF(N, nx, ny, Nmax, data, DELTA, 1);
+  Get_EF(N, nx, ny, Nmax, data, DELTA, 1,interacciones);
   for(int ii=0;ii<Nmax;ii++)
     {
       if(N[ii].getoc()==false)
@@ -525,11 +573,11 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
     }
 }
 
-void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, double coefx, double coefv, int seed, double V_diff)
+void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, double coefx, double coefv, int seed, double V_diff,bool interacciones)
 {
   bool cond;
   //update positions and boundaries
-  update_and_check_pos2(N, nx, ny, Nmax, data, mu, sigma, dt, coefx, coefv, seed);
+  update_and_check_pos2(N, nx, ny, Nmax, data, mu, sigma, dt, coefx, coefv, seed,interacciones);
   cond=Update_boundary(N, nx, ny, Nmax, data);
   //Obtain potential using fast algorithm
   if(cond==true)
@@ -541,13 +589,13 @@ void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, 
     }
 }
 
-void PEFRL(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, int seed, double V_diff)
+void PEFRL(Body * N, data_t & data, int nx, int ny, double l, int Nmax, double mu, double sigma, double dt, int seed, double V_diff, bool interacciones)
 {
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, 0.0, seed, V_diff);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, coef1, seed, V_diff);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, coef2, Lambda, seed, V_diff);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, Lambda, seed, V_diff);
-  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, coef1, seed, V_diff);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, 0.0, seed, V_diff,interacciones);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, coef1, seed, V_diff,interacciones);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, coef2, Lambda, seed, V_diff,interacciones);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Xi, Lambda, seed, V_diff,interacciones);
+  evolve_system(N, data, nx, ny, l, Nmax, mu, sigma, dt, Zi, coef1, seed, V_diff,interacciones);
 }
 
 void print_fractal (int nx, int ny, data_t & data, std::string filename)
