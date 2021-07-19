@@ -18,14 +18,14 @@ int main(int argc, char **argv)
     double tdibujo = 0;
     double dt=0.01;
     double V=0.1*std::stod(argv[2]);  //The second is 10 times V where V is the voltage.
-    double radio=0.01*std::atoi(argv[3]); //the third is 100 times the radio of the particles.
+    double radio=0.001*std::atoi(argv[3]); //the third is 1000 times the radio of the particles.
     double x, y, z, vx, vy, vz, q0, x0 = 0.25, y0 = 0.25;
 
     double dx = Lx /(2*(Nx + 1));
     double dy = Ly /(2*(Ny + 1));
     //Declare potential and density array
     data_t potential(NX*NY);
-    bool interacciones=false;
+    bool interacciones=true;
 
     for (int i=0; i<N;i++)
       {
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false, radio);
 	//Molecule[i].print();
       }
-    //start_animation(argc);
+    start_animation(argc);
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
@@ -58,15 +58,15 @@ int main(int argc, char **argv)
 	a=relaxation_step(potential,NX,NY);
 	  count+=1;	 
       }
-    //std::string filename="Fract_size"+std::to_string(std::atoi(argv[1]))+".txt";
+    std::string filena="Fract_size"+std::to_string(std::atoi(argv[1]))+".txt";
 
     data_q distribution;
     for (int t = 0; t < 5000; t++)
     {
-      /* 
-      if (t % 200 == 0)
+      
+      if (t % 5 == 0)
         {
-	  //print_potential_size(NX, NY, potential, filename, t);
+	  print_potential_size(NX, NY, potential, filena, t);
 	 
 	     begin_frame(argc);
              for (int k = 0; k < N; k++)
@@ -74,8 +74,8 @@ int main(int argc, char **argv)
 	     end_frame(argc);
 	 
         }
-      */
-      PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,interacciones);	
+     
+      PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,true);	
       if(check_fractal(Molecule,NX,N)==true)
 	{
 	  distribution.push_back(Probability_distribution(Molecule,N));
