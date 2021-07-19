@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
-    boundary_conditions(potential,Nx,NY,Molecule,Lx,N,V);
+    boundary_conditions1(potential,Nx,NY,Molecule,Lx,N,V);
     evolve(potential, NX, NY, NSTEPS, NSTEPS);
     bool a=true;
     int count=0;
