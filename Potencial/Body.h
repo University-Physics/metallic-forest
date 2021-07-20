@@ -73,8 +73,15 @@ public:
 
     // print gnuplot animation
   inline void print() { std::cout << ","<< r.x() << "+"+std::to_string(radii)+"*cos(t)," << r.y() << "+"+std::to_string(radii)+"*sin(t)";
-    if(q<0){std::cout<<"lc \"red\"";}
+    if(oc==false)
+      { if(q<0)
+      {std::cout<<"lc \"red\"";}
     else{std::cout<<"lc \"blue\"";}
+      }
+    else
+      {
+	std::cout<<"lc \"black\"";
+      }
     };
 
     //-- Friends --

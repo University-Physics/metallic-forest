@@ -45,11 +45,11 @@ int main(int argc, char **argv)
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false, radio);
 	//Molecule[i].print();
       }
-    start_animation(argc);
+    // start_animation(3);
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
-    boundary_conditions1(potential,Nx,NY,Molecule,Lx,N,V);
+    boundary_conditions4(potential,Nx,NY,Molecule,Lx,N,V);
     evolve(potential, NX, NY, NSTEPS, NSTEPS);
     bool a=true;
     int count=0;
@@ -58,14 +58,14 @@ int main(int argc, char **argv)
 	a=relaxation_step(potential,NX,NY);
 	  count+=1;	 
       }
-    std::string filena="Fract_size"+std::to_string(std::atoi(argv[1]))+".txt";
+    // std::string filena="Fract_size"+std::to_string(std::atoi(argv[1]))+".txt";
 
     data_q distribution;
     for (int t = 0; t < 5000; t++)
     {
       
-      if (t % 5 == 0)
-        {
+      /*if (t % 2 == 0)
+      {
 	  print_potential_size(NX, NY, potential, filena, t);
 	 
 	     begin_frame(argc);
@@ -74,6 +74,7 @@ int main(int argc, char **argv)
 	     end_frame(argc);
 	 
         }
+      */
      
       PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,true);	
       if(check_fractal(Molecule,NX,N)==true)

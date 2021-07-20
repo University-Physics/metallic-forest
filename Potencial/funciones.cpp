@@ -430,13 +430,13 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 		
 		if(N[jj].getoc()==false){
 		  aux2=N[jj].getR();
-		  dr=aux2-aux1;
+		  dr=aux-aux2;
 		  q2=N[jj].getQ();
 		  d_aux=norm(dr);
 		  if(d_aux<2*N[ii].getrad())d_aux=2*N[ii].getrad();
 		  Faux=q1*q2*dr/(d_aux*d_aux*d_aux);
 		  
-		  if(norm(dr)<N[ii].getrad())
+		  if(norm(dr)<2*N[ii].getrad())
 		    {
 		      r_aux=std::sqrt(1/(1/N[ii].getrad()+1/N[jj].getrad()));
 		      Faux-=4/3*r_aux*std::sqrt(norm(dr))*dr;
@@ -478,17 +478,16 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 		
 		if(N[jj].getoc()==false){
 		  aux2=N[jj].getR();
-		  dr=aux2-aux1;
-		  q2=N[jj].getQ();
+		  dr=aux-aux2;// ii
 		  d_aux=norm(dr);
-		  if(norm(dr)<N[ii].getrad())
+		  if(norm(dr)<2*N[ii].getrad())
 		    {
 		      r_aux=std::sqrt(1/(1/N[ii].getrad()+1/N[jj].getrad()));
 		      Faux-=4/3*r_aux*std::sqrt(norm(dr))*dr;
 		    }
 		  
 		  N[ii].addForce(Faux);
-		  N[jj].addForce((-1)*Faux);
+		  N[jj].addForce((-1)*Faux); //jj
 		}
 	      }
 	    
@@ -521,12 +520,33 @@ bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data)
        {
       if( qaux>0 && 1<=auxx && auxx<nx-1 && 1<=auxy && auxy<ny-1)
 	{
-	  if(data[(auxx+1)*ny+auxy].ocupation == true ||data[(auxx-1)*ny+auxy].ocupation == true || data[auxx*ny+(auxy+1)].ocupation == true ||  data[auxx*ny+(auxy-1)].ocupation == true)
+	  if(data[(auxx+1)*ny+auxy].ocupation == true ||data[(auxx-1)*ny+auxy].ocupation == true || data[auxx*ny+(auxy+1)].ocupation == true ||  data[auxx*ny+(auxy-1)].ocupation == true || data[(auxx+1)*ny+auxy-1].ocupation == true || data[(auxx+1)*ny+auxy+1].ocupation == true ||data[(auxx-1)*ny+auxy+1].ocupation == true || data[(auxx-1)*ny+auxy-1].ocupation == true)
 	    {
+	      Vector3D aux2;
+	      double x=0;
+	      double y=0;
+	      double radio=N[ii].getrad();
+	      for(int jj=0;jj<Nmax;jj++)
+	      {
+		if(N[jj].getoc()==true)
+		  {
+		  aux2=N[jj].getR();
+		  double norma=norm(aux2-aux);
+		  double x=aux[0];
+		  double y=aux[1];
+		  if(norma<2*radio && not std::isnan(radio/norma))
+		    {
+		      
+		      aux+=aux*(radio/norma)-aux2*(radio/norma);
+		      
+		      }
+		  }
+	      }
 	      cond=true;
 	      Vaux[0]=0;
 	      Vaux[1]=0;
 	      N[ii].setV(Vaux);
+	      N[ii].setR(aux);
 	      N[ii].setoc(true);   
 	    }
 	}
@@ -557,10 +577,58 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 	  Vnew=N[ii].getV();
 	  DR=Rnew-Rold;
 	  if(Rnew[0]>1 || Rnew[0]<0) 
-	    {//Rnew=Rnew-DR
-	      Rnew[0]=Rnew[0]-DR[0];
-	      Vnew[0]*=-1;
+	    {
+	      
+	      if(Rnew[0]<0 && N[ii].getQ()>0)
+		{
+		  Rnew[0]=0;
+		  Rnew[0]=Rold[0];
+		  Rnew[1]=Rold[1];
+		  int auxx=1;
+		  int auxy=1;
+		  for(int t=0;t<10;t++)
+		    {
+		      double A=Rnew[0]+DR[0]/10;
+		      double B=Rnew[0]+DR[1]/10;
+		      auxx=int(Rnew[0]/DELTA);
+		      auxy=int(Rnew[1]/DELTA);
+		      if(auxx==0)
+			{
+			  data[auxx*ny+auxy].ocupation=true;
+			  Vnew[0]=0;
+			  Vnew[1]=0;
+			  N[ii].setoc(true);
+			  break;
+			}
+		      if(auxx>=1 && auxy>=1 && auxy<ny-1) 
+			{
+			  Rnew[0]=A;
+			  Rnew[1]=B;
+		      if(data[(auxx+1)*ny+auxy].ocupation == true ||data[(auxx-1)*ny+auxy].ocupation == true || data[auxx*ny+(auxy+1)].ocupation == true ||  data[auxx*ny+(auxy-1)].ocupation == true || data[(auxx+1)*ny+auxy-1].ocupation == true || data[(auxx+1)*ny+auxy+1].ocupation == true ||data[(auxx-1)*ny+auxy+1].ocupation == true || data[(auxx-1)*ny+auxy-1].ocupation == true)
+			{
+			  data[auxx*ny+auxy].ocupation=true;
+			  Vnew[0]=0;
+			  Vnew[1]=0;
+			  N[ii].setoc(true);
+			  break;
+			}
+			}
+		      else
+			{
+			  Rnew[0]=Rold[0];
+			  Vnew[0]*=-1;
+			  break;
+			}
+		    }
+		}
+
+		  else
+		    {
+		      Rnew[0]=Rnew[0]-DR[0];
+		      Vnew[0]*=-1;
+		    }	  
 	    }
+	
 	  if(Rnew[1]>1 || Rnew[1]<0)
 	    {
 	      
