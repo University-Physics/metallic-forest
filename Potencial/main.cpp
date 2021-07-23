@@ -5,6 +5,7 @@
 #include <fstream>
 #include <cstdlib>
 
+// alt-> M
 
 std::string filename(int n);
 
@@ -41,11 +42,14 @@ int main(int argc, char **argv)
 
 	q0=-0.01;
 	//if((i+1)<=N*(1+std::stod(argv[4]))/2) q0*=-1;
-	  if(i%std::atoi(argv[4])==0) q0*=-1; // ratio of population between charges +q0 and -q0: (Number of q0)/(Number of -q0)= (argv[4]-1) if argv[4]|N
+	if(i%std::atoi(argv[4])==0) q0*=-1; // ratio of population between charges +q0 and -q0: (Number of q0)/(Number of -q0)= (argv[4]-1) if argv[4]|N
+	if(i%2==0) q0*=-1;
+       
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false, radio);
 	//Molecule[i].print();
       }
-    // start_animation(3);
+    //Perturbation(Molecule,std::atoi(argv[4])*0.1,N);
+    //start_animation(3);
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
@@ -58,10 +62,10 @@ int main(int argc, char **argv)
 	a=relaxation_step(potential,NX,NY);
 	  count+=1;	 
       }
-    // std::string filena="Fract_size"+std::to_string(std::atoi(argv[1]))+".txt";
+     std::string filena="Fract_size"+std::to_string(std::atoi(argv[1]))+".txt";
 
     data_q distribution;
-    for (int t = 0; t < 5000; t++)
+    for (int t = 0; t < 1; t++)
     {
       
       /*if (t % 2 == 0)
@@ -73,8 +77,8 @@ int main(int argc, char **argv)
                 Molecule[k].print();
 	     end_frame(argc);
 	 
-        }
-      */
+        }*/
+      
      
       PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,true);	
       if(check_fractal(Molecule,NX,N)==true)
