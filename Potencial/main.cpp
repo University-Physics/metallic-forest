@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
-    boundary_conditions4(potential,Nx,NY,Molecule,Lx,N,V);
+    boundary_conditions3(potential,Nx,NY,Molecule,Lx,N,V);
     evolve(potential, NX, NY, NSTEPS, NSTEPS);
     bool a=true;
     int count=0;
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
      std::string filena="Fract_size"+std::to_string(std::atoi(argv[1]))+".txt";
 
     data_q distribution;
-    for (int t = 0; t < 1; t++)
+    for (int t = 0; t < 5000; t++)
     {
       
       /*if (t % 2 == 0)
