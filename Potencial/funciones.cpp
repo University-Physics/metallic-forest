@@ -166,7 +166,7 @@ void boundary_conditions4(data_t & data, int nx, int ny, Body * N, double l, int
     for(int iy = 0; iy < ny; ++iy) {       //     #----
       data[ix*ny + iy].value = -V_diff/2;  //     #----
       data[ix*ny + iy].electrode = true;   //     #----
-      data[ix*ny + iy].ocupation = false;   //     #----
+      data[ix*ny + iy].ocupation = true;   //     #----
     }
     // last row
     ix = nx-1;
@@ -739,3 +739,15 @@ bool check_fractal(Body * molecule,int nx, int Nmax)
     }
   return prueba;
 }
+void Perturbation(Body * Molecule, double K, int N)
+{
+  
+  for(int jj=0; jj<int(K*N/2);jj++)
+	    {
+	      int F=rand()%N;
+	      while(Molecule[F].getQ()<0) {F=rand()%N;}
+	      Molecule[F].setq(-0.01);
+	    }
+}
+
+
