@@ -16,7 +16,7 @@ const double coef2 = (1 - 2 * (Xi + Zi));
 
 // Implementation
 const int Nx = 49, Ny = 49;
-const int N = Nx * Ny ;
+const int N =Nx * Ny ;
 const double m0 = 1.0;
 
 // Random number generator

@@ -44,6 +44,9 @@ public:
     // Get position
     inline Vector3D getR(void) { return r; };
 
+    // Get Force
+    inline Vector3D getF(void) { return F; };
+
     // Get velocity
     inline Vector3D getV(void) { return v; };
 
