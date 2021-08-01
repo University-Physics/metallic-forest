@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 	//Molecule[i].print();
       }
     //Perturbation(Molecule,std::atoi(argv[4])*0.1,N);
-   start_animation(3);
+    // start_animation(3);
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
@@ -61,7 +61,7 @@ int main(int argc, char **argv)
     data_q distribution;
     for (int t = 0; t < 5000; t++)
     {
-            
+      /*      
       if (t % 2 == 0)
       {
 	  print_potential_size(NX, NY, potential, filena, t);
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 	 
         }
       
-     
+      */
       PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,false);	
       if(check_fractal(Molecule,NX,N)==true)
 	{

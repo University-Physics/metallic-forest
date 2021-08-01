@@ -9,7 +9,7 @@ v=1
 	g++ -c -O3 $< 
 
 main.x:$(OBJ)
-	g++ -O3 -g -Wall $^ -o $@
+	g++ -O3 -g -Wall -fsanitize=undefined -fsanitize=address $^ -o $@
 
 I$(i): main.x varyI$(i).sh
 	nohup bash varyI$(i).sh

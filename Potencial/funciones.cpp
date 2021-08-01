@@ -65,12 +65,17 @@ void deposited_particles(data_t & data, int nx, int ny, Body * N, double l, int 
    for(int ii=0;ii<Nmax;ii++) // This for is concerning for all the particles, it evaluates if a particle have collided with the anode and now it's part of it.
     {
       aux=N[ii].getR();
-      if(N[ii].getoc()==true && data[int(nx*aux[0]/l)*ny + int(ny*aux[1]/l)].electrode == false) // Collision condition
+      int auxx=int(nx*aux[0]/l);
+      int auxy=int(ny*aux[1]/l);
+      if(auxx>=1 && auxx<nx-1 && auxy>=1 && auxy<ny-1)
+	{
+      if(N[ii].getoc()==true && data[auxx*ny + auxy].electrode == false) // Collision condition
 	{
 	  // Set the electrode conditions in the box where the particle remains
 	  
 	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=-V_diff/2; 
 	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;  
+	}
 	}
     }
 }
@@ -472,7 +477,7 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 	auxy=int(aux[1]/DELTA);
 	if(1<=auxx && auxx<nx-1 && 1<=auxy && auxy<ny-1)
 	  {
-	    
+	    /*
 	    for(int jj = 0; jj<ii; jj++)
 	      {
 		
@@ -490,7 +495,7 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 		  N[jj].addForce((-1)*Faux); //jj
 		}
 	      }
-	    
+	    */
 	    Faux[0]=q1*(data[(auxx-1)*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/(2*Delta)-gamma*aux1[0];
 	    Faux[1]=q1*(data[auxx*ny+(auxy-1)].value-data[auxx*ny+(auxy+1)].value)/(2*Delta)-gamma*aux1[1];
 	    N[ii].addForce(Faux);
@@ -523,8 +528,6 @@ bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data)
 	  if(data[(auxx+1)*ny+auxy].ocupation == true ||data[(auxx-1)*ny+auxy].ocupation == true || data[auxx*ny+(auxy+1)].ocupation == true ||  data[auxx*ny+(auxy-1)].ocupation == true || data[(auxx+1)*ny+auxy-1].ocupation == true || data[(auxx+1)*ny+auxy+1].ocupation == true ||data[(auxx-1)*ny+auxy+1].ocupation == true || data[(auxx-1)*ny+auxy-1].ocupation == true)
 	    {
 	      Vector3D aux2;
-	      double x=0;
-	      double y=0;
 	      double radio=N[ii].getrad();
 	      for(int jj=0;jj<Nmax;jj++)
 	      {
@@ -532,11 +535,8 @@ bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data)
 		  {
 		  aux2=N[jj].getR();
 		  double norma=norm(aux2-aux);
-		  double x=aux[0];
-		  double y=aux[1];
 		  if(norma<2*radio && not std::isnan(radio/norma))
-		    {
-		      
+		    { 
 		      aux+=aux*(radio/norma)-aux2*(radio/norma);
 		      
 		      }
@@ -557,7 +557,7 @@ bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data)
 }
 void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, double mu, double sigma, double dt, double coefx, double coefv, int seed, bool interacciones)
 {
-  Vector3D Rnew, Vnew, move, DR, Rold, Vold;
+  Vector3D Rnew, Vnew, move, DR, Rold, Vold, AUXX;
   double move_x, move_y;
   CRandom rand(seed);
   Get_EF(N, nx, ny, Nmax, data, DELTA, 1,interacciones);
@@ -571,13 +571,20 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 	  N[ii].moveR(dt, coefv);
 	  move_x = rand.gauss(mu, sigma);
 	  move_y = rand.gauss(mu, sigma);
+	  //std::cout<<"MOVES"<<" x"<<move_x<<" "<<move_y<<std::endl;
+	  //std::cout<<"FORCE"<<N[ii].getF()[0]<<" "<<N[ii].getF()[1]<<std::endl;
 	  move.load(move_x, move_y, 0);
+	  AUXX=N[ii].getR();
+	  AUXX+=coefx*move;
+	  //std::cout<<AUXX[0]<<" "<<AUXX[1]<<std::endl;
 	  N[ii].setR(N[ii].getR() + (coefx)* move);
 	  Rnew=N[ii].getR();
 	  Vnew=N[ii].getV();
 	  DR=Rnew-Rold;
+	  //std::cout<<Rold[0]<<" "<<Rold[1]<<" "<<Rnew[0]<<" "<<Rnew[1]<<" "<<coefx<<" "<<coefv<<std::endl;
 	  if(Rnew[0]>1 || Rnew[0]<0) 
 	    {
+	     
 	      
 	      if(Rnew[0]<0 && N[ii].getQ()>0)
 		{
@@ -586,31 +593,33 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 		  Rnew[1]=Rold[1];
 		  int auxx=1;
 		  int auxy=1;
+		  double A=Rnew[0];
+		  double B=Rnew[1];
+		  
 		  for(int t=0;t<10;t++)
 		    {
-		      double A=Rnew[0]+DR[0]/10;
-		      double B=Rnew[0]+DR[1]/10;
-		      auxx=int(Rnew[0]/DELTA);
-		      auxy=int(Rnew[1]/DELTA);
-		      if(auxx==0)
+		      auxx=int(A/DELTA);
+		      auxy=int(B/DELTA);
+		      if(auxx==0 && auxy>=1 && auxy<ny-1)
 			{
+			  
 			  data[auxx*ny+auxy].ocupation=true;
 			  Vnew[0]=0;
 			  Vnew[1]=0;
 			  N[ii].setoc(true);
 			  break;
 			}
-		      if(auxx>=1 && auxy>=1 && auxy<ny-1) 
+		      if(auxx>=1 && auxy>=1 && auxy<ny-1 && auxx<nx-1) 
 			{
 			  Rnew[0]=A;
 			  Rnew[1]=B;
-		      if(data[(auxx+1)*ny+auxy].ocupation == true ||data[(auxx-1)*ny+auxy].ocupation == true || data[auxx*ny+(auxy+1)].ocupation == true ||  data[auxx*ny+(auxy-1)].ocupation == true || data[(auxx+1)*ny+auxy-1].ocupation == true || data[(auxx+1)*ny+auxy+1].ocupation == true ||data[(auxx-1)*ny+auxy+1].ocupation == true || data[(auxx-1)*ny+auxy-1].ocupation == true)
+			  if(data[(auxx+1)*ny+auxy].ocupation == true || data[(auxx-1)*ny+auxy].ocupation == true || data[auxx*ny+(auxy+1)].ocupation == true ||  data[auxx*ny+(auxy-1)].ocupation == true || data[(auxx+1)*ny+auxy-1].ocupation == true || data[(auxx+1)*ny+auxy+1].ocupation == true ||data[(auxx-1)*ny+auxy+1].ocupation == true || data[(auxx-1)*ny+auxy-1].ocupation == true || data[(auxx)*ny+auxy].ocupation == true)
 			{
-			  data[auxx*ny+auxy].ocupation=true;
+	      
 			  Vnew[0]=0;
 			  Vnew[1]=0;
-			  N[ii].setoc(true);
 			  break;
+			  
 			}
 			}
 		      else
@@ -619,20 +628,21 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 			  Vnew[0]*=-1;
 			  break;
 			}
+		      A+=DR[0]/10;
+		      B+=DR[1]/10;
 		    }
 		}
-
 		  else
 		    {
-		      Rnew[0]=Rnew[0]-DR[0];
+		      Rnew[0]=Rold[0];
 		      Vnew[0]*=-1;
 		    }	  
 	    }
 	
-	  if(Rnew[1]>1 || Rnew[1]<0)
+	  if(Rnew[1]>=1 || Rnew[1]<=0)
 	    {
 	      
-	      Rnew[1]=Rnew[1]-DR[1];
+	      Rnew[1]=Rold[1];
 	      Vnew[1]*=-1;
 	    }
 	  N[ii].setV(Vnew);
