@@ -38,6 +38,8 @@ def generate_txt(Name,A,B,C):
     elif Name=="radii":
         Variacion=[1,2,3,4,5]
         outfile="Results_radii"+str(int(A))+"T"+str(int(B))+"V"+str(int(C))+"I.txt"
+    elif Name=="frontera":
+        Variacion=[1,2,3,4]
     for j in range(10):
         for i in Variacion:
             if Name=="imbalance":
@@ -48,6 +50,8 @@ def generate_txt(Name,A,B,C):
                 filename=Nombre(A,str(int(i)),B,C,str(int(j+1)))
             if Name=="radii":
                 filename=Nombre(A,B,str(int(i)),C,str(int(j+1)))
+            if Name=="frontera":
+                filename=str(i)+Nombre(A,B,C,"2",str(int(j+1)))
             data[0,0]=i
             data[0,1]=fractal_dimension(opening(filename), max_box_size = None, min_box_size = 1, n_samples = 100, n_offsets = 0, plot = False)[0]
             data[0,2]=fractal_dimension(opening(filename), max_box_size = None, min_box_size = 1, n_samples = 100, n_offsets = 0, plot = False)[1]

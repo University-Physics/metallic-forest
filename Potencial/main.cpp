@@ -37,17 +37,23 @@ int main(int argc, char **argv)
         vz = 0;
 
 	q0=-0.01;
-	//if((i+1)<=N*(1+std::stod(argv[4]))/2) q0*=-1;
 	if(i%std::atoi(argv[4])==0) q0*=-1; // ratio of population between charges +q0 and -q0: (Number of q0)/(Number of -q0)= (argv[4]-1) if argv[4]|N
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false, radio);
 	//Molecule[i].print();
       }
+    
     //Perturbation(Molecule,std::atoi(argv[4])*0.1,N);
     // start_animation(3);
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
-    boundary_conditions(potential,Nx,NY,Molecule,Lx,N,V);
+   
+    if(std::atoi(argv[6])==0){boundary_conditions(potential, NX, NY, Molecule, Lx, N, V);}
+    if(std::atoi(argv[6])==1){boundary_conditions1(potential, NX, NY, Molecule, Lx, N, V);}
+    if(std::atoi(argv[6])==2){boundary_conditions2(potential, NX, NY, Molecule, Lx, N, V);}
+    if(std::atoi(argv[6])==3){boundary_conditions3(potential, NX, NY, Molecule, Lx, N, V);}
+    
+    //boundary_conditions(potential,Nx,NY,Molecule,Lx,N,V);
     evolve(potential, NX, NY, NSTEPS, NSTEPS);
     bool a=true;
     int count=0;
