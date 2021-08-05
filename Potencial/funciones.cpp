@@ -600,7 +600,7 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 		    {
 		      auxx=int(A/DELTA);
 		      auxy=int(B/DELTA);
-		      if(auxx==0 && auxy>=1 && auxy<ny-1)
+		      if(auxx==0 && auxy>=1 && auxy<ny-1 && data[0].ocupation==true)
 			{
 			  
 			  data[auxx*ny+auxy].ocupation=true;
