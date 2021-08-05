@@ -1,4 +1,4 @@
-arg=(1 2 3 4 5 6 7 8 9 10)
+arg=(25 30 35 40 45 50 55 60)
 arg1=(1 2 3 4 5 )
 for V in ${arg[*]}; do
     for S in ${arg1[*]}; do

@@ -72,9 +72,9 @@ int main(int argc, char **argv)
 	     end_frame(argc);
 	 
         }
-      
       */
-      PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,false);	
+     
+      PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,true);	
       if(check_fractal(Molecule,NX,N)==true)
 	{
 	  distribution.push_back(Probability_distribution(Molecule,N));

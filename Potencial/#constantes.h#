@@ -1,8 +1,0 @@
-const double DELTA = 1./201;//Espaciado entre puntos
-const double XMIN = 0.0;    // Valor mínimo de x
-const double XMAX = 1;      // Valor máximo de x
-const double YMIN = 0.0;    // Valor mínimo de y
-const double YMAX = 1;      // Valor máximo de y
-const int NX = (XMAX-XMIN)/DELTA;       // Número de espacios en x
-const int NY = (YMAX-YMIN)/DELTA;       // Número de espacios en y
-const int NSTEPS = 100; // Pasos de tiempo
