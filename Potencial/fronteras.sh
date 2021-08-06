@@ -5,6 +5,6 @@ done
 wait
 for S in ${arg[*]}; do
     mv "./data/Out1T50V1R2I"$S"S.txt" "./data/fronteras/"$1"Out1T50V1R2I"$S"S.txt"
-    mv "1T50V1R2I"$S"SProbability_distribution.txt" "./data/fronteras/P/1T50V1R2I"$S"SProbability_distribution.txt"
+    mv "1T50V1R2I"$S"SProbability_distribution.txt" "./data/fronteras/P/"$1"T50V1R2I"$S"SProbability_distribution.txt"
 done
 
