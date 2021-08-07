@@ -37,7 +37,7 @@ int main(int argc, char **argv)
         vz = 0;
 
 	q0=-0.01;
-	if(i%std::atoi(argv[4])==0) q0*=-1; // ratio of population between charges +q0 and -q0: (Number of q0)/(Number of -q0)= (argv[4]-1) if argv[4]|N
+	if(i%std::atoi(argv[4])==0) q0*=-1; // ratio of population between charges +q0 and -q0: (Number of -q0)/(Number of q0)= (argv[4]-1) if argv[4]|N
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false, radio);
 	//Molecule[i].print();
       }
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
       */
      
       PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,true);	
-      if(check_fractal(Molecule,NX,N)==true)
+      if(check_fractal(Molecule,NX,N,std::atoi(argv[4]))==true)
 	{
 	  distribution.push_back(Probability_distribution(Molecule,N));
 	  break;
