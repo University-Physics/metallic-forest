@@ -740,7 +740,7 @@ bool check_fractal(Body * molecule,int nx, int Nmax, int I)
     for(int i=0;i<Nmax;i++)
     {
       double deposit=Probability_distribution(molecule,N);
-      double percent=(I-1)/I*Nmax;
+      double percent=Nmax/I;
       if(deposit > percent*0.8)
 	{
 	  prueba=true;
