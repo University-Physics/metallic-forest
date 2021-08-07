@@ -734,15 +734,14 @@ void evolve_opt(data_t & data, int nx, int ny, double l, int Nmax, Body * N, dou
   // evolve
   evolve(data, nx, ny, NSTEPS/10, NSTEPS/10);
 }
-bool check_fractal(Body * molecule,int nx, int Nmax)
+bool check_fractal(Body * molecule,int nx, int Nmax, int I)
 {
   bool prueba=false;
     for(int i=0;i<Nmax;i++)
     {
-      int percent=int((nx-1)*(0.9));
-      double x=molecule[i].getR()[0]/DELTA;
-      bool verdad= molecule[i].getoc();
-      if(int(x)>=percent && verdad==true)
+      double deposit=Probability_distribution(molecule,N);
+      double percent=(I-1)/I*Nmax;
+      if(deposit > percent*0.8)
 	{
 	  prueba=true;
 	}
