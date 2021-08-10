@@ -1,5 +1,3 @@
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"><a+b>
 # Introducción a la investigación Teórica 2021-1
 
 Este repositorio contiene el codigo necesario para la investigación realizada
