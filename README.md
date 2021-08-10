@@ -20,8 +20,17 @@ Este compilado funciona para sacar todos los resultados que se desee segun los
 parametros adicionales que se escriban al correrlo. Para esto, en esa misma carpeta
 hay multiples bash scripts que corren las simulaciones que se desean y organizan
 los datos resultantes en una carpeta data.
-
-Se pueden correr simulaciones variando I, R, T y V (cada una es un parametro en
+El corazón del proyecto son los archivos funciones.cpp y main.cpp, el primero contiene
+la información acerca de todas las funciones implementadas en la simulación, el segundo 
+se compone de la función main con la implementación de dichas funciones, el ejecutable principal
+es generado utilizando el comando `make main.x`. `main.x` recibe 6 parámetros cuyo orden son:
+- 1000 kT
+- 10 V
+- 1000 R 
+- $$-2/(\sigma-1)$$
+- S
+- Frontera
+Se pueden correr simulaciones variando I, T y V (cada una es un parametro en
 la simulación) y para cada uno existen diferentes variedades que se pueden correr.
 Por ejemplo, existen 4 simulaciones diferentes (con diferentes parametros fijos)
 en las que se obtiene la dimensión fractal en función de I. Para correr cada una
@@ -53,3 +62,7 @@ lineas correspondientes a las graficas que se desea sacar y se corre `python Cal
 o, si es necesario en su equipo `python3 Calcular.py`
 
 Las graficas correspondientes estaran ahora en la carpeta `Codigo` en formato png.
+Por ejemplo, si se desea realizar la gráfica de I2 basta con descomentar las siguientes lineas:
+#generate_txt("imbalance",100, 1, 1)
+#plot("Results_imbalance100T1V1R.txt","imbalance", "I2", "kT="+str(0.01)+", R/L=0.01, V=0.1")
+Notemos que los argumentos de las funciones estan asociados con los parámetros recibidos por el main.x
