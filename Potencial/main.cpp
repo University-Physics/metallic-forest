@@ -47,13 +47,13 @@ int main(int argc, char **argv)
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
-   
-    if(std::atoi(argv[6])==0){boundary_conditions(potential, NX, NY, Molecule, Lx, N, V);}
+    /* 
+	if(std::atoi(argv[6])==0){boundary_conditions(potential, NX, NY, Molecule, Lx, N, V);}
     if(std::atoi(argv[6])==1){boundary_conditions1(potential, NX, NY, Molecule, Lx, N, V);}
     if(std::atoi(argv[6])==2){boundary_conditions2(potential, NX, NY, Molecule, Lx, N, V);}
     if(std::atoi(argv[6])==3){boundary_conditions3(potential, NX, NY, Molecule, Lx, N, V);}
-    
-    //boundary_conditions(potential,Nx,NY,Molecule,Lx,N,V);
+    */ 
+    boundary_conditions(potential,Nx,NY,Molecule,Lx,N,V);
     evolve(potential, NX, NY, NSTEPS, NSTEPS);
     bool a=true;
     int count=0;
