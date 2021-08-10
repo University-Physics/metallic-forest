@@ -21,7 +21,7 @@ def opening(textname):
     return data
 # Función auxiliar
 def Nombre(T,V,R,I,S):
-    return  "data/Out"+str(int(T))+"T"+str(int(V))+"V"+str(int(R))+"R"+str(int(I))+"I"+str(int(S))+"S.txt"
+    return  str(int(T))+"T"+str(int(V))+"V"+str(int(R))+"R"+str(int(I))+"I"+str(int(S))+"S.txt"
 
 # Se hacen los archivos aqui
 def generate_txt(Name,A,B,C):
@@ -39,19 +39,20 @@ def generate_txt(Name,A,B,C):
         Variacion=[1,2,3,4,5]
         outfile="Results_radii"+str(int(A))+"T"+str(int(B))+"V"+str(int(C))+"I.txt"
     elif Name=="frontera":
-        Variacion=[1,2,3,4]
+        Variacion=[0,1,2,3]
+        outfile="Results_frontera"+str(int(A))+"T"+str(int(B))+"V"+str(int(C))+"R2I.txt"
     for j in range(10):
         for i in Variacion:
             if Name=="imbalance":
-                filename=Nombre(A,B,C,str(int(i)),str(int(j+1)))
+                filename="data/Out"+Nombre(A,B,C,str(int(i)),str(int(j+1)))
             if Name=="temperature":
-                filename=Nombre(str(int(i)),A,B,C,str(int(j+1)))
+                filename="data/Out"+Nombre(str(int(i)),A,B,C,str(int(j+1)))
             if Name=="potential":
-                filename=Nombre(A,str(int(i)),B,C,str(int(j+1)))
+                filename="data/Out"+Nombre(A,str(int(i)),B,C,str(int(j+1)))
             if Name=="radii":
-                filename=Nombre(A,B,str(int(i)),C,str(int(j+1)))
+                filename="data/Out"+Nombre(A,B,str(int(i)),C,str(int(j+1)))
             if Name=="frontera":
-                filename=str(i)+Nombre(A,B,C,"2",str(int(j+1)))
+                filename="data/"+str(i)+"Out"+Nombre(A,B,C,"2",str(int(j+1)))
             data[0,0]=i
             data[0,1]=fractal_dimension(opening(filename), max_box_size = None, min_box_size = 1, n_samples = 100, n_offsets = 0, plot = False)[0]
             data[0,2]=fractal_dimension(opening(filename), max_box_size = None, min_box_size = 1, n_samples = 100, n_offsets = 0, plot = False)[1]
@@ -76,17 +77,18 @@ def read_file(filename):
         if len(line)>=1:
             if float(C[0]) in muestras:
                 ind=muestras.index(float(C[0]))
-                dimension[ind].append([float(C[1]),float(C[2])])
+                dimension[ind].append(float(C[1]))
                 division[ind]+=1
             else:
                 muestras.append(float(C[0]))
                 ind=muestras.index(float(C[0]))
                 dimension.append([])
                 division.append(0.0)
-                dimension[ind].append([float(C[1]),float(C[2])])
+                dimension[ind].append(float(C[1]))
                 division[ind]+=1
     definitivos=np.zeros((2,len(muestras)))
     for i in range(len(muestras)):
+        
         real=[0 for t in range(100)]
         for k in range(100):
             if(len(dimension[i])>=1):
@@ -98,4 +100,38 @@ def read_file(filename):
         print(definitivos)
     return muestras,definitivos
                                       
-                     
+def read_Probability(filename):
+    muestras=[]
+    dimension=[]
+    division=[]
+    for i in range(2,3):
+        archivo=open("data/fronteras/P/"+filename+str(i)+"SProbability_distribution.txt")
+        A=archivo.read().split("\n")
+        for line in A:
+            C=re.findall("[0-9]+",line)
+            print(C)
+            if A.index(line)==0:
+                if float(C[0]) not in muestras:
+                    muestras.append(float(C[0]))
+                    dimension.append([])
+                    division.append(0.0)
+            if len(line)>=1:
+                if float(C[0]) in muestras:
+                    ind=muestras.index(float(C[0]))
+                    dimension[ind].append(float(C[1]))
+                    division[ind]+=1
+                else:
+                    muestras.append(float(C[0]))
+                    ind=muestras.index(float(C[0]))
+                    dimension.append([])
+                    division.append(0.0)
+                    dimension[ind].append(float(C[1]))
+                    division[ind]+=1
+                 
+    definitivos=np.zeros((2,len(muestras)))
+    for i in range(len(muestras)):
+        definitivos[0,i]=np.mean(dimension[i])
+        definitivos[1,i]=np.std(dimension[i])/np.sqrt(10)
+        print(definitivos)
+    return muestras,definitivos
+                                                  

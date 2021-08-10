@@ -1,7 +1,7 @@
 from leer_archivos import Nombre
 from leer_archivos import generate_txt
 from graficas import plot
-
+from graficas import graph_probability 
 #generate_txt("imbalance",1, 1, 1)
 #plot("Results_imbalance1T1V1R.txt","imbalance", "I1", "kT="+str((0.001)**2)+", R/L=0.01, V=0.1")
 #generate_txt("imbalance",100, 1, 1)
@@ -23,6 +23,9 @@ from graficas import plot
 #generate_txt("temperature",100, 1, 2)
 #plot("Results_temperature100V1R2I.txt","temperature", "T2", "V=10.0, R/L=0.01, I=0")
 #generate_txt("potential",1, 1, 2)
-plot("Results_potential1T1R2I.txt","potential", "V2", "kT="+str(0.000001)+", R/L=0.001, I=0")
+#plot("Results_potential1T1R2I.txt","potential", "V2", "kT="+str(0.000001)+", R/L=0.001, I=0")
 #generate_txt("potential",1, 1, 2)
 #plot("Results_potential1T1R2I.txt","potential", "V2", "kT="+str(0.001)+", R/L=0.01, I=0")
+#generate_txt("frontera",1, 50, 1)
+#plot("Results_frontera1T50V1R2I.txt","frontera", "frontera", "kT="+str(0.001)+", R/L=0.01, I=0")
+graph_probability("T50V1R2I")

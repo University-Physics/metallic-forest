@@ -207,36 +207,36 @@ void boundary_conditions3(data_t & data, int nx, int ny, Body * N, double l, int
     // first row
     ix = 0;
     for(int iy = 0; iy < ny; ++iy) {       //     #----
-      data[ix*ny + iy].value = -V_diff/2;  //     #----
+      data[ix*ny + iy].value = V_diff/2;  //     #----
       data[ix*ny + iy].electrode = true;   //     #----
-      data[ix*ny + iy].ocupation = true;   //     #----
+      data[ix*ny + iy].ocupation = false;   //     #----
     }
     // last row
     ix = nx-1;
     for(int iy = 0; iy < ny; ++iy) {       //     ----#
-      data[ix*ny + iy].value = -V_diff/2;   //     ----#
+      data[ix*ny + iy].value = V_diff/2;   //     ----#
       data[ix*ny + iy].electrode = true;   //     ----#
-      data[ix*ny + iy].ocupation = true;  //     ----#
+      data[ix*ny + iy].ocupation = false;  //     ----#
 
     }
     // first row
     
     iy = 0;
     for(int ix = 1; ix < nx; ++ix) {       //    #####
-      data[ix*ny + iy].value = -V_diff/2;   //    -----
+      data[ix*ny + iy].value = V_diff/2;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
-      data[ix*ny + iy].ocupation = true;  //    -----
+      data[ix*ny + iy].ocupation = false;  //    -----
     }
     // last row                             
     iy = ny-1;
     for(int ix = 1; ix < nx; ++ix) {       //    -----
-      data[ix*ny + iy].value =-V_diff/2;   //    -----
+      data[ix*ny + iy].value =V_diff/2;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
-      data[ix*ny + iy].ocupation = true;  //    #####
+      data[ix*ny + iy].ocupation = false;  //    #####
     }
-    data[(nx-1)/2*ny+ny/2].value=V_diff/2;
+    data[(nx-1)/2*ny+ny/2].value=-V_diff/2;
     data[(nx-1)/2*ny+ny/2].electrode=true;
-    data[(nx-1)/2*ny+ny/2].ocupation=false;
+    data[(nx-1)/2*ny+ny/2].ocupation=true;
 }
 double Probability_distribution(Body * molecule, int N)
 {
@@ -743,6 +743,7 @@ bool check_fractal(Body * molecule,int nx, int Nmax, int I)
       double percent=Nmax/I;
       if(deposit > percent*0.8)
 	{
+	  std::cout<<deposit<<" "<<percent<<std::endl;
 	  prueba=true;
 	}
     }
