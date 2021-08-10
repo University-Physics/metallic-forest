@@ -10,10 +10,10 @@ para la materia de introducción a la investigación teórica por:
 Estudiantes de física de la Universidad Nacional de Colombia sede Bogotá.
 
 La simulación principal que se uso para la obtención de los resultados reportados
-en el informe se encuentran en la carpeta `Potencial`. Estos se corrieron usando
+en el informe se encuentran en la carpeta `Codigo`. Estos se corrieron usando
 computadores con sistema operativo Ubuntu, Mac con g++ y Python 3 instalados.
 
-Para reproducir los resultados es necesario entrar a esta carpeta ` $ cd Potencial`
+Para reproducir los resultados es necesario entrar a esta carpeta ` $ cd Codigo`
 y correr el comando `make`. Este compilará la simulación en C++.
 
 Este compilado funciona para sacar todos los resultados que se desee segun los
@@ -38,7 +38,7 @@ Es importante especificar la variable si es diferente de 1, ya que si no se espe
 make dirá que el nombre no existe.
 
 Después de esto, los datos quedan organizados en la carpeta data y en una carpeta
-con el nombre correspondiente a la información que se corrió, i.e `Potencial/data/I1`.
+con el nombre correspondiente a la información que se corrió, i.e `Codigo/data/I1`.
 
 Para graficar estos datos, se uso Python. Es necesario tener las siguientes librerías instaladas:
 
@@ -52,4 +52,4 @@ espera encontrarlos. Posteriormente en el archivo `Calcular.py` se descomentan l
 lineas correspondientes a las graficas que se desea sacar y se corre `python Calcular.py`
 o, si es necesario en su equipo `python3 Calcular.py`
 
-Las graficas correspondientes estaran ahora en la carpeta `Potencial` en formato png.
+Las graficas correspondientes estaran ahora en la carpeta `Codigo` en formato png.
