@@ -1,7 +1,5 @@
 <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></a>
-
-  
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"><
 # Introducción a la investigación Teórica 2021-1
 
 Este repositorio contiene el codigo necesario para la investigación realizada
@@ -70,3 +68,4 @@ Por ejemplo, si se desea realizar la gráfica de I2 basta con descomentar las si
 #generate_txt("imbalance",100, 1, 1)
 #plot("Results_imbalance100T1V1R.txt","imbalance", "I2", "kT="+str(0.01)+", R/L=0.01, V=0.1")
 Notemos que los argumentos de las funciones estan asociados con los parámetros recibidos por el main.x
+>
