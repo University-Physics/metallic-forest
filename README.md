@@ -24,10 +24,10 @@ El corazón del proyecto son los archivos funciones.cpp y main.cpp, el primero c
 la información acerca de todas las funciones implementadas en la simulación, el segundo 
 se compone de la función main con la implementación de dichas funciones, el ejecutable principal
 es generado utilizando el comando `make main.x`. `main.x` recibe 6 parámetros cuyo orden son:
-- 1000 kT
-- 10 V
-- 1000 R 
-- $$-2/(\sigma-1)$$
+- 1000 kT=T
+- 10 delta V=V
+- 1000 R_A=R
+- I=-2/(sigma-1)
 - S
 - Frontera
 Se pueden correr simulaciones variando I, T y V (cada una es un parametro en
