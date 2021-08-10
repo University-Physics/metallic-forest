@@ -43,7 +43,7 @@ Para I esto sería:
 
 o
 
-`$ make i=2 I2``
+`$ make i=2 I2`
 
 Es importante especificar la variable si es diferente de 1, ya que si no se especifica,
 make dirá que el nombre no existe.
