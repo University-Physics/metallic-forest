@@ -30,6 +30,8 @@ es generado utilizando el comando `make main.x`. `main.x` recibe 6 parámetros c
 - I=-2/(sigma-1)
 - S
 - Frontera
+
+
 Se pueden correr simulaciones variando I, T y V (cada una es un parametro en
 la simulación) y para cada uno existen diferentes variedades que se pueden correr.
 Por ejemplo, existen 4 simulaciones diferentes (con diferentes parametros fijos)
