@@ -24,7 +24,7 @@ As its name says , the boundary_conditions function sets the boundary in the pot
 void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
 {
   //We have to note that three sides are part of the anode and only one of the cathode
-  
+
     int ix, iy;
     Vector3D aux, aux1;
     // first row
@@ -43,23 +43,109 @@ void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int 
 
     }
     // first row
-    
+
     iy = 0;
     for(int ix = 1; ix < nx; ++ix) {       //    #####
       data[ix*ny + iy].value = 0;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    -----
     }
-    // last row                             
+    // last row
     iy = ny-1;
     for(int ix = 1; ix < nx; ++ix) {       //    -----
       data[ix*ny + iy].value =0;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    #####
     }
-    }
+}
 
-void deposited_particles(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
+void boundary_conditions_wn(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff, double amp, int seed)
+{
+  //We have to note that three sides are part of the anode and only one of the cathode
+    // Set random number generator for white noise
+    std::mt19937 gen(seed);
+    std::uniform_real_distribution<double> dis(-1.0, 1.0);
+    int ix, iy;
+    Vector3D aux, aux1;
+    // first row
+    ix = 0;
+    for(int iy = 0; iy < ny; ++iy) {       //     #----
+      data[ix*ny + iy].value = -V_diff/2+amp*dis(gen);  //     #----
+      data[ix*ny + iy].electrode = true;   //     #----
+      data[ix*ny + iy].ocupation = true;   //     #----
+    }
+    // last row
+    ix = nx-1;
+    for(int iy = 0; iy < ny; ++iy) {       //     ----#
+      data[ix*ny + iy].value = V_diff/2+amp*dis(gen);   //     ----#
+      data[ix*ny + iy].electrode = true;   //     ----#
+      data[ix*ny + iy].ocupation = false;  //     ----#
+
+    }
+    // first row
+
+    iy = 0;
+    for(int ix = 1; ix < nx; ++ix) {       //    #####
+      data[ix*ny + iy].value = 0+amp*dis(gen);   //    -----
+      data[ix*ny + iy].electrode = true;   //    -----
+      data[ix*ny + iy].ocupation = false;  //    -----
+    }
+    // last row
+    iy = ny-1;
+    for(int ix = 1; ix < nx; ++ix) {       //    -----
+      data[ix*ny + iy].value =0+amp*dis(gen);   //    -----
+      data[ix*ny + iy].electrode = true;   //    -----
+      data[ix*ny + iy].ocupation = false;  //    #####
+    }
+}
+
+void boundary_conditions_pn(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff, double amp, int seed)
+{
+  //We have to note that three sides are part of the anode and only one of the cathode
+    // Set the pink noise text files cause I dont know how to do it in c :(
+    std::string filename="pn"+std::to_string(seed)+".txt";
+    std::ifstream myfile;
+    myfile.open(filename);
+    double noise=0;
+    int ix, iy;
+    Vector3D aux, aux1;
+    // first row
+    ix = 0;
+    for(int iy = 0; iy < ny; ++iy) {       //     #----
+      noise >> mystring;
+      data[ix*ny + iy].value = -V_diff/2+amp*noise;  //     #----
+      data[ix*ny + iy].electrode = true;   //     #----
+      data[ix*ny + iy].ocupation = true;   //     #----
+    }
+    // last row
+    ix = nx-1;
+    for(int iy = 0; iy < ny; ++iy) {       //     ----#
+      noise >> mystring;
+      data[ix*ny + iy].value = V_diff/2+amp*noise;   //     ----#
+      data[ix*ny + iy].electrode = true;   //     ----#
+      data[ix*ny + iy].ocupation = false;  //     ----#
+
+    }
+    // first row
+
+    iy = 0;
+    for(int ix = 1; ix < nx; ++ix) {       //    #####
+      noise >> mystring;
+      data[ix*ny + iy].value = 0+amp*noise;   //    -----
+      data[ix*ny + iy].electrode = true;   //    -----
+      data[ix*ny + iy].ocupation = false;  //    -----
+    }
+    // last row
+    iy = ny-1;
+    for(int ix = 1; ix < nx; ++ix) {       //    -----
+      data[ix*ny + iy].value =0+amp*noise;   //    -----
+      noise >> mystring;
+      data[ix*ny + iy].electrode = true;   //    -----
+      data[ix*ny + iy].ocupation = false;  //    #####
+    }
+}
+
+void deposited_particles(data_t & data, int nx, int ny, Body * N, double l, int Nmax)
 {
   Vector3D aux;
    for(int ii=0;ii<Nmax;ii++) // This for is concerning for all the particles, it evaluates if a particle have collided with the anode and now it's part of it.
@@ -72,9 +158,16 @@ void deposited_particles(data_t & data, int nx, int ny, Body * N, double l, int 
       if(N[ii].getoc()==true && data[auxx*ny + auxy].electrode == false) // Collision condition
 	{
 	  // Set the electrode conditions in the box where the particle remains
-	  
-	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=-V_diff/2; 
-	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;  
+    double aux=0;
+	  for(int ii=0; ii<3; ii++){
+      for(int jj=0;jj<3;jj++){
+        if(data[(int(nx*aux[0]/l)+(ii-1))*ny+int(ny*aux[1]/l)+jj-1].ocupation==true){
+          aux+=data[(int(nx*aux[0]/l)+(ii-1))*ny+int(ny*aux[1]/l)+jj-1].value;
+        }
+      }
+    }
+	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=-V_diff/2;
+	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;
 	}
 	}
     }
@@ -82,7 +175,7 @@ void deposited_particles(data_t & data, int nx, int ny, Body * N, double l, int 
 void boundary_conditions1(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
 {
   //We have to note that three sides are part of the anode and only one of the cathode
-  
+
     int ix, iy;
     Vector3D aux, aux1;
     // first row
@@ -101,14 +194,14 @@ void boundary_conditions1(data_t & data, int nx, int ny, Body * N, double l, int
 
     }
     // first row
-    
+
     iy = 0;
     for(int ix = 1; ix < nx; ++ix) {       //    #####
       data[ix*ny + iy].value = V_diff/2;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    -----
     }
-    // last row                             
+    // last row
     iy = ny-1;
     for(int ix = 1; ix < nx; ++ix) {       //    -----
       data[ix*ny + iy].value =V_diff/2;   //    -----
@@ -120,7 +213,7 @@ void boundary_conditions1(data_t & data, int nx, int ny, Body * N, double l, int
 void boundary_conditions2(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
 {
   //We have to note that three sides are part of the anode and only one of the cathode
-  
+
     int ix, iy;
     Vector3D aux, aux1;
     // first row
@@ -139,14 +232,14 @@ void boundary_conditions2(data_t & data, int nx, int ny, Body * N, double l, int
 
     }
     // first row
-    
+
     iy = 0;
     for(int ix = 1; ix < nx; ++ix) {       //    #####
       data[ix*ny + iy].value = -V_diff/2;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = true;  //    -----
     }
-    // last row                             
+    // last row
     iy = ny-1;
     for(int ix = 1; ix < nx; ++ix) {       //    -----
       data[ix*ny + iy].value =-V_diff/2;   //    -----
@@ -163,7 +256,7 @@ void boundary_conditions2(data_t & data, int nx, int ny, Body * N, double l, int
 void boundary_conditions4(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
 {
   //We have to note that three sides are part of the anode and only one of the cathode
-  
+
     int ix, iy;
     Vector3D aux, aux1;
     // first row
@@ -182,14 +275,14 @@ void boundary_conditions4(data_t & data, int nx, int ny, Body * N, double l, int
 
     }
     // first row
-    
+
     iy = 0;
     for(int ix = 1; ix < nx; ++ix) {       //    #####
       data[ix*ny + iy].value = -V_diff/2*(1-(2.00*ix)/((nx-1)));   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    -----
     }
-    // last row                             
+    // last row
     iy = ny-1;
     for(int ix = 1; ix < nx; ++ix) {                      //    -----
       data[ix*ny + iy].value =-V_diff/2*(1-(2.00*ix)/((nx-1)));//    -----
@@ -201,7 +294,7 @@ void boundary_conditions4(data_t & data, int nx, int ny, Body * N, double l, int
 void boundary_conditions3(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
 {
   //We have to note that three sides are part of the anode and only one of the cathode
-  
+
     int ix, iy;
     Vector3D aux, aux1;
     // first row
@@ -220,14 +313,14 @@ void boundary_conditions3(data_t & data, int nx, int ny, Body * N, double l, int
 
     }
     // first row
-    
+
     iy = 0;
     for(int ix = 1; ix < nx; ++ix) {       //    #####
       data[ix*ny + iy].value = V_diff/2;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    -----
     }
-    // last row                             
+    // last row
     iy = ny-1;
     for(int ix = 1; ix < nx; ++ix) {       //    -----
       data[ix*ny + iy].value =V_diff/2;   //    -----
@@ -262,7 +355,7 @@ bool evolve(data_t & data, int nx, int ny, int nsteps, int ns_est)
        {
 	 return false;
        }
-     
+
       //print_screen(data, nx, ny);
       //print_gnuplot(data, nx, ny);
     }
@@ -339,7 +432,7 @@ bool relaxation_step(data_t & data, int nx, int ny)
 	    {
 	      double next_value=(aux[(ix+1)*ny + iy].value + aux[(ix-1)*ny + iy].value + aux[ix*ny + iy+1].value + aux[ix*ny + iy-1].value)/4.0;
 	      if(std::fabs(data[ix*ny + iy].value-next_value)>std::fabs(next_value)*0.001)//(v(x,y,t)-v(x,y,t+dt))<0.01*v(x,y,t)
-		{ 
+		{
 		  seguir=true;
 		  data[ix*ny + iy].value = next_value;
 		}
@@ -390,7 +483,7 @@ void print_gnuplot(const data_t & data, int nx, int ny)
         std::cout << "\n";
     }
     std::cout << "e\n";
-    
+
 }
 
 void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax)
@@ -448,10 +541,10 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 	auxy=int(aux[1]/DELTA);
 	if(1<=auxx && auxx<nx-1 && 1<=auxy && auxy<ny-1)
 	  {
-	    
+
 	    for(int jj = 0; jj<ii; jj++)
 	      {
-		
+
 		if(N[jj].getoc()==false){
 		  aux2=N[jj].getR();
 		  dr=aux-aux2;
@@ -459,19 +552,31 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 		  d_aux=norm(dr);
 		  if(d_aux<2*N[ii].getrad())d_aux=2*N[ii].getrad();
 		  Faux=q1*q2*dr/(d_aux*d_aux*d_aux);
+<<<<<<< HEAD
 		  /*
+=======
+
+>>>>>>> 2102909fb9c8aaa1b55ab1788c3276922b56c7e8
 		  if(norm(dr)<2*N[ii].getrad())
 		    {
 		      r_aux=std::sqrt(1/(1/N[ii].getrad()+1/N[jj].getrad()));
 		      Faux-=4/3*r_aux*std::sqrt(norm(dr))*dr;
 		    }
+<<<<<<< HEAD
 		  */
+=======
+
+>>>>>>> 2102909fb9c8aaa1b55ab1788c3276922b56c7e8
 		  N[ii].addForce(Faux);
 		  N[jj].addForce((-1)*Faux);
 		}
 	      }
+<<<<<<< HEAD
 	    
 	     
+=======
+
+>>>>>>> 2102909fb9c8aaa1b55ab1788c3276922b56c7e8
 	    Faux[0]=q1*(data[(auxx-1)*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/(2*Delta)-gamma*aux1[0];
 	    Faux[1]=q1*(data[auxx*ny+(auxy-1)].value-data[auxx*ny+(auxy+1)].value)/(2*Delta)-gamma*aux1[1];
 	    // Faux=q1*E_field(nx,ny,aux[0],aux[1],Delta,data)-gamma*aux1;
@@ -482,7 +587,7 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
     }
   else
     {
-      
+
  for(int ii=0;ii<Nmax;ii++)
     {
       if(N[ii].getoc()==true)
@@ -498,8 +603,7 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 	auxy=int(aux[1]/DELTA);
 	if(1<=auxx && auxx<nx-1 && 1<=auxy && auxy<ny-1)
 	  {
-	   
-	    
+
 	    Faux[0]=q1*(data[(auxx-1)*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/(2*Delta)-gamma*aux1[0];
 	    Faux[1]=q1*(data[auxx*ny+(auxy-1)].value-data[auxx*ny+(auxy+1)].value)/(2*Delta)-gamma*aux1[1];
 	    // E_field(int nx,int ny, double x, double y,double DELTA, data_t & data)
@@ -542,9 +646,9 @@ bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data)
 		  aux2=N[jj].getR();
 		  double norma=norm(aux2-aux);
 		  if(norma<2*radio && not std::isnan(radio/norma))
-		    { 
+		    {
 		      aux+=aux*(radio/norma)-aux2*(radio/norma);
-		      
+
 		      }
 		  }
 	      }
@@ -553,7 +657,7 @@ bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data)
 	      Vaux[1]=0;
 	      N[ii].setV(Vaux);
 	      N[ii].setR(aux);
-	      N[ii].setoc(true);   
+	      N[ii].setoc(true);
 	    }
 	}
        }
@@ -588,10 +692,10 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 	  Vnew=N[ii].getV();
 	  DR=Rnew-Rold;
 	  //std::cout<<Rold[0]<<" "<<Rold[1]<<" "<<Rnew[0]<<" "<<Rnew[1]<<" "<<coefx<<" "<<coefv<<std::endl;
-	  if(Rnew[0]>1 || Rnew[0]<0) 
+	  if(Rnew[0]>1 || Rnew[0]<0)
 	    {
-	     
-	      
+
+
 	      if(Rnew[0]<0 && N[ii].getQ()>0)
 		{
 		  Rnew[0]=0;
@@ -601,31 +705,31 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 		  int auxy=1;
 		  double A=Rnew[0];
 		  double B=Rnew[1];
-		  
+
 		  for(int t=0;t<10;t++)
 		    {
 		      auxx=int(A/DELTA);
 		      auxy=int(B/DELTA);
 		      if(auxx==0 && auxy>=1 && auxy<ny-1 && data[0].ocupation)
 			{
-			  
+
 			  data[auxx*ny+auxy].ocupation=true;
 			  Vnew[0]=0;
 			  Vnew[1]=0;
 			  N[ii].setoc(true);
 			  break;
 			}
-		      if(auxx>=1 && auxy>=1 && auxy<ny-1 && auxx<nx-1) 
+		      if(auxx>=1 && auxy>=1 && auxy<ny-1 && auxx<nx-1)
 			{
 			  Rnew[0]=A;
 			  Rnew[1]=B;
 			  if(data[(auxx+1)*ny+auxy].ocupation == true || data[(auxx-1)*ny+auxy].ocupation == true || data[auxx*ny+(auxy+1)].ocupation == true ||  data[auxx*ny+(auxy-1)].ocupation == true || data[(auxx+1)*ny+auxy-1].ocupation == true || data[(auxx+1)*ny+auxy+1].ocupation == true ||data[(auxx-1)*ny+auxy+1].ocupation == true || data[(auxx-1)*ny+auxy-1].ocupation == true || data[(auxx)*ny+auxy].ocupation == true)
 			{
-	      
+
 			  Vnew[0]=0;
 			  Vnew[1]=0;
 			  break;
-			  
+
 			}
 			}
 		      else
@@ -642,12 +746,12 @@ void update_and_check_pos2(Body * N, int nx, int ny, int Nmax, data_t & data, do
 		    {
 		      Rnew[0]=Rold[0];
 		      Vnew[0]*=-1;
-		    }	  
+		    }
 	    }
-	
+
 	  if(Rnew[1]>=1 || Rnew[1]<=0)
 	    {
-	      
+
 	      Rnew[1]=Rold[1];
 	      Vnew[1]*=-1;
 	    }
@@ -666,7 +770,7 @@ void evolve_system(Body * N, data_t & data, int nx, int ny, double l, int Nmax, 
   //Obtain potential using fast algorithm
   if(cond==true)
     {
-      deposited_particles(data, nx, ny, N ,l, Nmax, V_diff);	  
+      deposited_particles(data, nx, ny, N ,l, Nmax, V_diff);
       while(relaxation_step(data,nx,ny)==true)
 	{
 	}
@@ -704,7 +808,7 @@ void print(data_q probability,std::string filename)
     }
   myfile<<"\n";
   myfile.close();
-  
+
 }
 void print_potential_size (int nx, int ny, data_t & data, std::string filename, int t)
 {
