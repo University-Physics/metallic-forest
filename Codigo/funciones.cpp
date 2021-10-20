@@ -406,6 +406,25 @@ void Get_Q(Body * N, data_q & Q, int nx, int ny, double l, int Nmax)
       Q[(int((nx-2)*aux[0]/l)+1)*ny+int((ny-2)*aux[1]/l)+1]+=qaux;
     }
 }
+Vector3D E_field(int nx,int ny, double x, double y,double DELTA, data_t & data)
+{
+      int auxx=int(x/DELTA);
+      int auxy=int(y/DELTA);
+      double Electric_Field;
+      Vector3D E_00;
+      Vector3D E_01;
+      Vector3D E_10;
+      Vector3D E_11;
+      Vector3D F_xy1;
+      Vector3D F_xy2;
+      E_00.load((data[(auxx-1)*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/(2*DELTA),(data[auxx*ny+(auxy-1)].value-data[auxx*ny+(auxy+1)].value)/(2*DELTA),0);
+      E_01.load((data[(auxx-1)*ny+auxy+1].value-data[(auxx+1)*ny+auxy+1].value)/(2*DELTA),(data[auxx*ny+(auxy)].value-data[auxx*ny+(auxy+2)].value)/(2*DELTA),0);
+      E_10.load((data[(auxx)*ny+auxy].value-data[(auxx+2)*ny+auxy].value)/(2*DELTA),(data[(auxx+1)*ny+(auxy-1)].value-data[(auxx+1)*ny+(auxy+1)].value)/(2*DELTA),0);
+      E_11.load((data[(auxx)*ny+auxy+1].value-data[(auxx+2)*ny+auxy+1].value)/(2*DELTA),(data[(auxx+1)*ny+(auxy)].value-data[(auxx+1)*ny+(auxy+2)].value)/(2*DELTA),0);
+      F_xy1=((auxx+1)*DELTA-x)/(DELTA)*E_00+(x-auxx*DELTA)/(DELTA)*E_10;
+      F_xy2=((auxx+1)*DELTA-x)/(DELTA)*E_01+(x-auxx*DELTA)/(DELTA)*E_11;
+return ((auxy+1)*DELTA-y)/(DELTA)*F_xy1+(y-auxy*DELTA)/(DELTA)*F_xy2;
+}
 
 void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, double gamma, bool interacciones)
 {
@@ -440,20 +459,22 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 		  d_aux=norm(dr);
 		  if(d_aux<2*N[ii].getrad())d_aux=2*N[ii].getrad();
 		  Faux=q1*q2*dr/(d_aux*d_aux*d_aux);
-		  
+		  /*
 		  if(norm(dr)<2*N[ii].getrad())
 		    {
 		      r_aux=std::sqrt(1/(1/N[ii].getrad()+1/N[jj].getrad()));
 		      Faux-=4/3*r_aux*std::sqrt(norm(dr))*dr;
 		    }
-		  
+		  */
 		  N[ii].addForce(Faux);
 		  N[jj].addForce((-1)*Faux);
 		}
 	      }
 	    
+	     
 	    Faux[0]=q1*(data[(auxx-1)*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/(2*Delta)-gamma*aux1[0];
 	    Faux[1]=q1*(data[auxx*ny+(auxy-1)].value-data[auxx*ny+(auxy+1)].value)/(2*Delta)-gamma*aux1[1];
+	    // Faux=q1*E_field(nx,ny,aux[0],aux[1],Delta,data)-gamma*aux1;
 	    N[ii].addForce(Faux);
 	  }
       }
@@ -477,27 +498,12 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 	auxy=int(aux[1]/DELTA);
 	if(1<=auxx && auxx<nx-1 && 1<=auxy && auxy<ny-1)
 	  {
-	    /*
-	    for(int jj = 0; jj<ii; jj++)
-	      {
-		
-		if(N[jj].getoc()==false){
-		  aux2=N[jj].getR();
-		  dr=aux-aux2;// ii
-		  d_aux=norm(dr);
-		  if(norm(dr)<2*N[ii].getrad())
-		    {
-		      r_aux=std::sqrt(1/(1/N[ii].getrad()+1/N[jj].getrad()));
-		      Faux-=4/3*r_aux*std::sqrt(norm(dr))*dr;
-		    }
-		  
-		  N[ii].addForce(Faux);
-		  N[jj].addForce((-1)*Faux); //jj
-		}
-	      }
-	    */
+	   
+	    
 	    Faux[0]=q1*(data[(auxx-1)*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/(2*Delta)-gamma*aux1[0];
 	    Faux[1]=q1*(data[auxx*ny+(auxy-1)].value-data[auxx*ny+(auxy+1)].value)/(2*Delta)-gamma*aux1[1];
+	    // E_field(int nx,int ny, double x, double y,double DELTA, data_t & data)
+	    // Faux=q1*E_field(nx,ny,aux[0],aux[1],Delta,data)-gamma*aux1;
 	    N[ii].addForce(Faux);
 	  }
       }
@@ -749,15 +755,3 @@ bool check_fractal(Body * molecule,int nx, int Nmax, int I)
     }
   return prueba;
 }
-void Perturbation(Body * Molecule, double K, int N)
-{
-  
-  for(int jj=0; jj<int(K*N/2);jj++)
-	    {
-	      int F=rand()%N;
-	      while(Molecule[F].getQ()<0) {F=rand()%N;}
-	      Molecule[F].setq(-0.01);
-	    }
-}
-
-
