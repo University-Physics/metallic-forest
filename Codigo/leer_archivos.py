@@ -104,7 +104,7 @@ def read_Probability(filename):
     muestras=[]
     dimension=[]
     division=[]
-    for i in range(2,3):
+    for i in range(1,11):
         archivo=open("data/fronteras/P/"+filename+str(i)+"SProbability_distribution.txt")
         A=archivo.read().split("\n")
         for line in A:

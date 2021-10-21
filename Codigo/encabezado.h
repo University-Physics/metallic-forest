@@ -19,10 +19,10 @@ typedef std::vector<double> data_q;
 void print(data_q probability,std::string filename);
 void initial_conditions(data_t & data, int nx, int ny);
 void boundary_conditions(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff);
-void boundary_conditions1(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
-void boundary_conditions2(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
-void boundary_conditions3(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
-void boundary_conditions4(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
+void boundary_conditions1(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff);
+void boundary_conditions2(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff);
+void boundary_conditions3(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff);
+void boundary_conditions4(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff);
 void boundary_conditions_wn(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff, double amp, int seed);
 void boundary_conditions_pn(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff, double amp, int seed);
 bool evolve(data_t & data, int nx, int ny, int nsteps, int ns_est);

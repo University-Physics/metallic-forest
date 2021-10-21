@@ -70,14 +70,14 @@ void boundary_conditions_wn(data_t & data, int nx, int ny, Body * N, double l, i
     // first row
     ix = 0;
     for(int iy = 0; iy < ny; ++iy) {       //     #----
-      data[ix*ny + iy].value = -V_diff/2+amp*dis(gen);  //     #----
+      data[ix*ny + iy].value =-V_diff/2+amp*dis(gen);  //     #----
       data[ix*ny + iy].electrode = true;   //     #----
       data[ix*ny + iy].ocupation = true;   //     #----
-    }
+	}
     // last row
     ix = nx-1;
     for(int iy = 0; iy < ny; ++iy) {       //     ----#
-      data[ix*ny + iy].value = V_diff/2+amp*dis(gen);   //     ----#
+      data[ix*ny + iy].value =V_diff/2+amp*dis(gen);   //     ----#
       data[ix*ny + iy].electrode = true;   //     ----#
       data[ix*ny + iy].ocupation = false;  //     ----#
 
@@ -86,18 +86,72 @@ void boundary_conditions_wn(data_t & data, int nx, int ny, Body * N, double l, i
 
     iy = 0;
     for(int ix = 1; ix < nx; ++ix) {       //    #####
-      data[ix*ny + iy].value = 0+amp*dis(gen);   //    -----
+      data[ix*ny + iy].value =V_diff/2+amp*dis(gen);   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    -----
     }
     // last row
     iy = ny-1;
     for(int ix = 1; ix < nx; ++ix) {       //    -----
-      data[ix*ny + iy].value =0+amp*dis(gen);   //    -----
+      data[ix*ny + iy].value =V_diff/2+amp*dis(gen);   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    #####
     }
 }
+
+void boundary_conditions_wnR(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff, double amp, int seed)
+{
+  //We have to note that three sides are part of the anode and only one of the cathode
+    // Set random number generator for white noise
+    std::mt19937 gen(seed);
+    std::uniform_real_distribution<double> dis(0, 1.0);
+    int ix, iy;
+    Vector3D aux, aux1;
+    // first row
+    ix = 0;
+    for(int iy = 0; iy < ny; ++iy)
+      {//     #----
+	for(int xx=0;xx<=int(amp*dis(gen));xx++)
+	 {
+      data[xx*ny + iy].value =-V_diff/2;  //     #----
+      data[xx*ny + iy].electrode = true;   //     #----
+      data[xx*ny + iy].ocupation = true;   //     #----
+         }
+      }
+    // last row
+    ix = nx-1;
+    for(int iy = 0; iy < ny; ++iy) {       //     ----#
+      for(int xx=0;xx<=int(amp*dis(gen));xx++)
+	 {
+      data[xx*ny + iy].value =V_diff/2;  //     #----
+      data[xx*ny + iy].electrode = true;   //     #----
+      data[xx*ny + iy].ocupation = false;   //     #----
+         }
+
+    }
+    // first row
+    iy = 0;
+    for(int ix = 1; ix < nx; ++ix) {       //    #####
+      for(int xx=0;xx<=int(amp*dis(gen));xx++)
+	 {
+      data[xx*ny + iy].value =V_diff/2;  //     #----
+      data[xx*ny + iy].electrode = true;   //     #----
+      data[xx*ny + iy].ocupation = false;   //     #----
+         }
+    }
+    // last row
+    iy = ny-1;
+    for(int ix = 1; ix < nx; ++ix) {       //    -----
+      for(int xx=0;xx<=int(amp*dis(gen));xx++)
+	 {
+      data[xx*ny + iy].value =V_diff/2;  //     #----
+      data[xx*ny + iy].electrode = true;   //     #----
+      data[xx*ny + iy].ocupation = false;   //     #----
+         }
+    }
+}
+
+
 
 void boundary_conditions_pn(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff, double amp, int seed)
 {
@@ -112,7 +166,7 @@ void boundary_conditions_pn(data_t & data, int nx, int ny, Body * N, double l, i
     // first row
     ix = 0;
     for(int iy = 0; iy < ny; ++iy) {       //     #----
-      noise >> mystring;
+      myfile >> noise;
       data[ix*ny + iy].value = -V_diff/2+amp*noise;  //     #----
       data[ix*ny + iy].electrode = true;   //     #----
       data[ix*ny + iy].ocupation = true;   //     #----
@@ -120,7 +174,7 @@ void boundary_conditions_pn(data_t & data, int nx, int ny, Body * N, double l, i
     // last row
     ix = nx-1;
     for(int iy = 0; iy < ny; ++iy) {       //     ----#
-      noise >> mystring;
+      myfile >> noise;
       data[ix*ny + iy].value = V_diff/2+amp*noise;   //     ----#
       data[ix*ny + iy].electrode = true;   //     ----#
       data[ix*ny + iy].ocupation = false;  //     ----#
@@ -130,7 +184,7 @@ void boundary_conditions_pn(data_t & data, int nx, int ny, Body * N, double l, i
 
     iy = 0;
     for(int ix = 1; ix < nx; ++ix) {       //    #####
-      noise >> mystring;
+      myfile >> noise;
       data[ix*ny + iy].value = 0+amp*noise;   //    -----
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    -----
@@ -139,13 +193,13 @@ void boundary_conditions_pn(data_t & data, int nx, int ny, Body * N, double l, i
     iy = ny-1;
     for(int ix = 1; ix < nx; ++ix) {       //    -----
       data[ix*ny + iy].value =0+amp*noise;   //    -----
-      noise >> mystring;
+      myfile >> noise;
       data[ix*ny + iy].electrode = true;   //    -----
       data[ix*ny + iy].ocupation = false;  //    #####
     }
 }
 
-void deposited_particles(data_t & data, int nx, int ny, Body * N, double l, int Nmax)
+void deposited_particles(data_t & data, int nx, int ny, Body * N, double l, int Nmax, double V_diff)
 {
   Vector3D aux;
    for(int ii=0;ii<Nmax;ii++) // This for is concerning for all the particles, it evaluates if a particle have collided with the anode and now it's part of it.
@@ -158,16 +212,23 @@ void deposited_particles(data_t & data, int nx, int ny, Body * N, double l, int 
       if(N[ii].getoc()==true && data[auxx*ny + auxy].electrode == false) // Collision condition
 	{
 	  // Set the electrode conditions in the box where the particle remains
-    double aux=0;
-	  for(int ii=0; ii<3; ii++){
-      for(int jj=0;jj<3;jj++){
-        if(data[(int(nx*aux[0]/l)+(ii-1))*ny+int(ny*aux[1]/l)+jj-1].ocupation==true){
-          aux+=data[(int(nx*aux[0]/l)+(ii-1))*ny+int(ny*aux[1]/l)+jj-1].value;
-        }
-      }
-    }
-	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].value=-V_diff/2;
-	  data[int(nx*aux[0]/l)*ny+int(ny*aux[1]/l)].ocupation=true;
+	  double prom=0;
+	  double count=0;
+	  /*
+	  for(int xx=0; xx<3;xx++)
+	    {
+	      for(int yy=0;yy<3;yy++)
+		{
+		  if(data[(auxx-1+xx)*ny+auxy-1+yy].electrode==true)
+		    count+=1;
+		  prom+=data[(auxx-1+xx)*ny+auxy-1+yy].value;
+		}
+	    }
+	  */
+	  //data[auxx*ny+auxy].value=prom/count;
+	  data[auxx*ny+auxy].value=-V_diff/2;
+	  data[auxx*ny+auxy].ocupation=true;
+	  data[auxx*ny+auxy].electrode=true;
 	}
 	}
     }
@@ -552,31 +613,10 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 		  d_aux=norm(dr);
 		  if(d_aux<2*N[ii].getrad())d_aux=2*N[ii].getrad();
 		  Faux=q1*q2*dr/(d_aux*d_aux*d_aux);
-<<<<<<< HEAD
-		  /*
-=======
-
->>>>>>> 2102909fb9c8aaa1b55ab1788c3276922b56c7e8
-		  if(norm(dr)<2*N[ii].getrad())
-		    {
-		      r_aux=std::sqrt(1/(1/N[ii].getrad()+1/N[jj].getrad()));
-		      Faux-=4/3*r_aux*std::sqrt(norm(dr))*dr;
-		    }
-<<<<<<< HEAD
-		  */
-=======
-
->>>>>>> 2102909fb9c8aaa1b55ab1788c3276922b56c7e8
 		  N[ii].addForce(Faux);
 		  N[jj].addForce((-1)*Faux);
 		}
 	      }
-<<<<<<< HEAD
-	    
-	     
-=======
-
->>>>>>> 2102909fb9c8aaa1b55ab1788c3276922b56c7e8
 	    Faux[0]=q1*(data[(auxx-1)*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/(2*Delta)-gamma*aux1[0];
 	    Faux[1]=q1*(data[auxx*ny+(auxy-1)].value-data[auxx*ny+(auxy+1)].value)/(2*Delta)-gamma*aux1[1];
 	    // Faux=q1*E_field(nx,ny,aux[0],aux[1],Delta,data)-gamma*aux1;

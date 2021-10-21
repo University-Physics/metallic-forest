@@ -1,10 +1,11 @@
 #include"funciones.cpp"
 #include"animate.h"
+#include<math.h>
 #include <string>
 #include <sstream>
 #include <fstream>
 #include <cstdlib>
-
+#include<random>
 // alt-> M
 
 std::string filename(int n);
@@ -18,32 +19,39 @@ int main(int argc, char **argv)
     double dt=0.01;
     double V=0.1*std::stod(argv[2]);  //The second is 10 times V where V is the voltage.
     double radio=0.001*std::atoi(argv[3]); //the third is 1000 times the radio of the particles.
-    double x, y, z, vx, vy, vz, q0, x0 = 0.25, y0 = 0.25;
-
+    double x, y, z, vx, vy, vz, q0;
     double dx = Lx /(2*(Nx + 1));
     double dy = Ly /(2*(Ny + 1));
     //Declare potential and density array
     data_t potential(NX*NY);
+    std:: random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.0,1.0);
+    int desbalance =  (1+std::atoi(argv[4])*0.01)*N/2;
     for (int i=0; i<N;i++)
       {
         // Initial positions in cubic lattice
-        x = dx + (i % Nx) * dx + x0;
-        y = dy + ((i / Nx) % Ny) * dy + y0;
+        x = dis(gen);
+        y = dis(gen);
         z = 0;
 
         // Initial nule velocities
         vx = rand.gauss(mu, sigma1);
         vy = rand.gauss(mu, sigma1);
         vz = 0;
-
-	q0=-0.01;
-	if(i%std::atoi(argv[4])==0) q0*=-1; // ratio of population between charges +q0 and -q0: (Number of -q0)/(Number of q0)= (argv[4]-1) if argv[4]|N
+	// k=sigma (Na-Nb)/N, Na -> + , Nb -> -.
+	if(i<desbalance)
+	  {
+	    q0=-0.01;
+	  }
+	else
+	  {
+	    q0=0.01;
+	  }
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false, radio);
-	//Molecule[i].print();
       }
-    
-    //Perturbation(Molecule,std::atoi(argv[4])*0.1,N);
-    // start_animation(3);
+
+       start_animation(3);
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
@@ -53,8 +61,8 @@ int main(int argc, char **argv)
     if(std::atoi(argv[6])==2){boundary_conditions2(potential, NX, NY, Molecule, Lx, N, V);}
     if(std::atoi(argv[6])==3){boundary_conditions3(potential, NX, NY, Molecule, Lx, N, V);}
     */ 
-    boundary_conditions(potential,Nx,NY,Molecule,Lx,N,V);
-    evolve(potential, NX, NY, NSTEPS, NSTEPS);
+    boundary_conditions_wnR(potential,Nx,NY,Molecule,Lx,N,V,V/2,std::atoi(argv[6]));
+    //evolve(potential, NX, NY, NSTEPS, NSTEPS);
     bool a=true;
     int count=0;
     while(a==true)
@@ -67,25 +75,25 @@ int main(int argc, char **argv)
     data_q distribution;
     for (int t = 0; t < 5000; t++)
     {
-      /*      
+           
       if (t % 2 == 0)
       {
 	  print_potential_size(NX, NY, potential, filena, t);
-	 
+	  	 
 	     begin_frame(argc);
              for (int k = 0; k < N; k++)
                 Molecule[k].print();
 	     end_frame(argc);
-	 
+	  
         }
-      */
-     
       PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,true);	
+      /*
       if(check_fractal(Molecule,NX,N,std::atoi(argv[4])))
 	{
 	  distribution.push_back(Probability_distribution(Molecule,N));
 	  break;
 	}
+      */
       distribution.push_back(Probability_distribution(Molecule,N));
     }
     std::string filename="data/Out"+std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S.txt";

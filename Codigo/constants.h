@@ -15,7 +15,7 @@ const double coef1 = (1 - 2 * Lambda) / 2;
 const double coef2 = (1 - 2 * (Xi + Zi));
 
 // Implementation
-const int Nx = 49, Ny = 49;
+const int Nx = 25, Ny = 25;
 const int N =Nx * Ny ;
 const double m0 = 1.0;
 

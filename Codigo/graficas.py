@@ -42,7 +42,7 @@ def graph_probability(filename):
     plt.xlim([0,1080])
     for i in I:
         x,y=read_Probability(i+filename)
-        plt.errorbar(x,y[0,:],color=G[int(i)], label=labelphrase+i+" S=2")
+        plt.errorbar(x,y[0,:],color=G[int(i)], label=labelphrase+str(int(i)+1))
         plt.scatter(x,y[0,:], color=G[int(i)])
     plt.legend()
     plt.savefig("Particulas_electrodepositadas2.png")
