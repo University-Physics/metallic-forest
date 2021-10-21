@@ -61,7 +61,7 @@ int main(int argc, char **argv)
     if(std::atoi(argv[6])==2){boundary_conditions2(potential, NX, NY, Molecule, Lx, N, V);}
     if(std::atoi(argv[6])==3){boundary_conditions3(potential, NX, NY, Molecule, Lx, N, V);}
     */ 
-    boundary_conditions_wnR(potential,Nx,NY,Molecule,Lx,N,V,V/2,std::atoi(argv[6]));
+    boundary_conditions_wnR(potential,Nx,NY,Molecule,Lx,N,V,5,std::atoi(argv[6]));
     //evolve(potential, NX, NY, NSTEPS, NSTEPS);
     bool a=true;
     int count=0;
@@ -81,8 +81,9 @@ int main(int argc, char **argv)
 	  print_potential_size(NX, NY, potential, filena, t);
 	  	 
 	     begin_frame(argc);
+	     print_potential_gnuplot(NX,NY,potential);
              for (int k = 0; k < N; k++)
-                Molecule[k].print();
+	       Molecule[k].print();
 	     end_frame(argc);
 	  
         }

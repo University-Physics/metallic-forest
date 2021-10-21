@@ -606,7 +606,8 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 	    for(int jj = 0; jj<ii; jj++)
 	      {
 
-		if(N[jj].getoc()==false){
+		if(N[jj].getoc()==false)
+		  {
 		  aux2=N[jj].getR();
 		  dr=aux-aux2;
 		  q2=N[jj].getQ();
@@ -615,11 +616,11 @@ void Get_EF(Body * N, int nx, int ny, int Nmax, data_t & data, double Delta, dou
 		  Faux=q1*q2*dr/(d_aux*d_aux*d_aux);
 		  N[ii].addForce(Faux);
 		  N[jj].addForce((-1)*Faux);
-		}
+		  }
 	      }
-	    Faux[0]=q1*(data[(auxx-1)*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/(2*Delta)-gamma*aux1[0];
-	    Faux[1]=q1*(data[auxx*ny+(auxy-1)].value-data[auxx*ny+(auxy+1)].value)/(2*Delta)-gamma*aux1[1];
-	    // Faux=q1*E_field(nx,ny,aux[0],aux[1],Delta,data)-gamma*aux1;
+	    //Faux[0]=q1*(data[(auxx-1)*ny+auxy].value-data[(auxx+1)*ny+auxy].value)/(2*Delta)-gamma*aux1[0];
+	    //Faux[1]=q1*(data[auxx*ny+(auxy-1)].value-data[auxx*ny+(auxy+1)].value)/(2*Delta)-gamma*aux1[1];
+	     Faux=q1*E_field(nx,ny,aux[0],aux[1],Delta,data)-gamma*aux1;
 	    N[ii].addForce(Faux);
 	  }
       }
@@ -688,7 +689,6 @@ bool Update_boundary(Body * N, int nx, int ny, int Nmax, data_t & data)
 		  if(norma<2*radio && not std::isnan(radio/norma))
 		    {
 		      aux+=aux*(radio/norma)-aux2*(radio/norma);
-
 		      }
 		  }
 	      }
@@ -876,6 +876,27 @@ void print_potential (int nx, int ny, data_t & data, std::string filename)
     myfile << "\n";
     myfile.close();
 }
+
+void print_potential_gnuplot (int nx, int ny,data_t & data)
+{
+  
+  for(int ii=0;ii<nx;ii++)
+    {
+       for(int jj=0;jj<ny;jj++)
+	 {
+	   if(data[ii*nx+jj].electrode==true)
+	     {
+	       //std::cout<<", "<<ii/(201.0)<<"+"<<(ii+1)/(201.0)<<"*(t-1)/6 ,"<<(jj+1)/(201.0)<<"+t*0.0 with filledcurves above y="<<jj/(201.0)<<" lt \"gray \" ";
+	       std::cout<<", "<<(ii)*(1.0)*DELTA+0.5*DELTA<<"+"<<DELTA/2<<"*cos(t) ,"<<(jj)*(1.0)*DELTA+0.5*DELTA<<"+"<<DELTA/2<<"*sin(t) with filledcurves closed  lt \"gray \" ";
+	       
+	     }
+	 }
+    }
+ 
+   
+}
+
+
 
 void evolve_opt(data_t & data, int nx, int ny, double l, int Nmax, Body * N, double V_diff)
 {
