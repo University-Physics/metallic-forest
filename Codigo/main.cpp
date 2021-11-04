@@ -20,8 +20,6 @@ int main(int argc, char **argv)
     double V=0.1*std::stod(argv[2]);  //The second is 10 times V where V is the voltage.
     double radio=0.001*std::atoi(argv[3]); //the third is 1000 times the radio of the particles.
     double x, y, z, vx, vy, vz, q0;
-    double dx = Lx /(2*(Nx + 1));
-    double dy = Ly /(2*(Ny + 1));
     //Declare potential and density array
     data_t potential(NX*NY);
     std:: random_device rd;
@@ -51,7 +49,7 @@ int main(int argc, char **argv)
         Molecule[i].init(x, y, z, vx, vy, vz, m0, q0, false, radio);
       }
 
-       start_animation(3);
+    //    start_animation(3);
 
     //Calculate initial potential
     initial_conditions(potential, NX, NY);
@@ -61,7 +59,7 @@ int main(int argc, char **argv)
     if(std::atoi(argv[6])==2){boundary_conditions2(potential, NX, NY, Molecule, Lx, N, V);}
     if(std::atoi(argv[6])==3){boundary_conditions3(potential, NX, NY, Molecule, Lx, N, V);}
     */ 
-    boundary_conditions_wnR(potential,Nx,NY,Molecule,Lx,N,V,5,std::atoi(argv[6]));
+    boundary_conditions_wnR(potential,NX,NY,Molecule,Lx,N,V,std::atoi(argv[6]),std::atoi(argv[7]));
     //evolve(potential, NX, NY, NSTEPS, NSTEPS);
     bool a=true;
     int count=0;
@@ -76,7 +74,7 @@ int main(int argc, char **argv)
     for (int t = 0; t < 5000; t++)
     {
            
-      if (t % 2 == 0)
+      /*if (t % 2 == 0)
       {
 	  print_potential_size(NX, NY, potential, filena, t);
 	  	 
@@ -87,6 +85,7 @@ int main(int argc, char **argv)
 	     end_frame(argc);
 	  
         }
+      */
       PEFRL(Molecule, potential, NX, NY, Lx, N, mu, sigma, dt, t+std::atoi(argv[5]), V,true);	
       /*
       if(check_fractal(Molecule,NX,N,std::atoi(argv[4])))

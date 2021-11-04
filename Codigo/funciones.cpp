@@ -123,9 +123,9 @@ void boundary_conditions_wnR(data_t & data, int nx, int ny, Body * N, double l, 
     for(int iy = 0; iy < ny; ++iy) {       //     ----#
       for(int xx=0;xx<=int(amp*dis(gen));xx++)
 	 {
-      data[xx*ny + iy].value =V_diff/2;  //     #----
-      data[xx*ny + iy].electrode = true;   //     #----
-      data[xx*ny + iy].ocupation = false;   //     #----
+	   data[(ix-xx)*ny + iy].value =V_diff/2;  //     #----
+	   data[(ix-xx)*ny + iy].electrode = true;   //     #----
+	   data[(ix-xx)*ny + iy].ocupation = false;   //     #----
          }
 
     }
@@ -134,9 +134,9 @@ void boundary_conditions_wnR(data_t & data, int nx, int ny, Body * N, double l, 
     for(int ix = 1; ix < nx; ++ix) {       //    #####
       for(int xx=0;xx<=int(amp*dis(gen));xx++)
 	 {
-      data[xx*ny + iy].value =V_diff/2;  //     #----
-      data[xx*ny + iy].electrode = true;   //     #----
-      data[xx*ny + iy].ocupation = false;   //     #----
+      data[ix*ny + xx].value =V_diff/2;  //     #----
+      data[ix*ny + xx].electrode = true;   //     #----
+      data[ix*ny + xx].ocupation = false;   //     #----
          }
     }
     // last row
@@ -144,9 +144,9 @@ void boundary_conditions_wnR(data_t & data, int nx, int ny, Body * N, double l, 
     for(int ix = 1; ix < nx; ++ix) {       //    -----
       for(int xx=0;xx<=int(amp*dis(gen));xx++)
 	 {
-      data[xx*ny + iy].value =V_diff/2;  //     #----
-      data[xx*ny + iy].electrode = true;   //     #----
-      data[xx*ny + iy].ocupation = false;   //     #----
+      data[ix*ny + iy-xx].value =V_diff/2;  //     #----
+      data[ix*ny + iy-xx].electrode = true;   //     #----
+      data[ix*ny + iy-xx].ocupation = false;   //     #----
          }
     }
 }
