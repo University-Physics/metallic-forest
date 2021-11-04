@@ -96,9 +96,9 @@ int main(int argc, char **argv)
       */
       distribution.push_back(Probability_distribution(Molecule,N));
     }
-    std::string filename="data/Out"+std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S.txt";
+    std::string filename="data/Out"+std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S"+std::to_string(std::atoi(argv[6]))+"A"+std::to_string(std::atoi(argv[7]))+"F"+".txt";
     print_fractal(NX,NY, potential, filename);
-    std::string namedis=std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S";
+    std::string namedis=std::to_string(std::atoi(argv[1]))+"T"+std::to_string(std::atoi(argv[2]))+"V"+std::to_string(std::atoi(argv[3]))+"R"+std::to_string(std::atoi(argv[4]))+"I"+std::to_string(std::atoi(argv[5]))+"S"+std::to_string(std::atoi(argv[6]))+"A"+std::to_string(std::atoi(argv[7]))+"F";
     print_fractal(NX,NY, potential, filename);
     print(distribution,namedis+"Probability_distribution.txt");
     //print_gnuplot(potential, NX, NY);
